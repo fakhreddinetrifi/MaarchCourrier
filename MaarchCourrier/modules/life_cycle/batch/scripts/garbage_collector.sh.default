@@ -1,0 +1,5 @@
+#!/bin/sh
+
+path='/var/www/html/MaarchCourrier/modules/life_cycle/batch'
+cd $path
+php  'process_garbage_collector.php' -c /var/www/html/MaarchCourrier/modules/life_cycle/batch/config/config_garbage_collector.xml -m count

@@ -1,0 +1,133 @@
+<mat-sidenav-container autosize class="maarch-container">
+    <ng-template #adminMenuTemplate>
+        <mat-nav-list>
+            <h3 mat-subheader>{{'lang.actions' | translate}}</h3>
+            <a mat-list-item routerLink="/administration/contacts/list/new">
+                <mat-icon color="primary" mat-list-icon class="fa fa-plus"></mat-icon>
+                <p mat-line>
+                    {{'lang.add' | translate}}
+                </p>
+            </a>
+            <a mat-list-item (click)="openContactExport()">
+                <mat-icon color="primary" mat-list-icon class="fa fa-file-export"></mat-icon>
+                <p mat-line>
+                    {{'lang.exportContacts' | translate}}
+                </p>
+            </a>
+            <a mat-list-item (click)="openContactImportModal()">
+                <mat-icon color="primary" mat-list-icon class="fas fa-file-import"></mat-icon>
+                <p mat-line>
+                    {{'lang.importContacts' | translate}}
+                </p>
+            </a>
+        </mat-nav-list>
+        <mat-divider></mat-divider>
+        <mat-nav-list>
+            <a mat-list-item *ngFor="let menu of subMenus" [class.active]="menu.current" [routerLink]="menu.route">
+                <mat-icon color="primary" mat-list-icon [class]="menu.icon"></mat-icon>
+                <p mat-line>
+                    {{menu.label}}
+                </p>
+            </a>
+        </mat-nav-list>
+    </ng-template>
+    <mat-sidenav-content>
+        <div class="bg-head">
+            <div class="bg-head-title" [class.customContainerRight]="appService.getViewMode()">
+                <div class="bg-head-title-label">
+                    <header-left></header-left>
+                </div>
+                <div class="bg-head-title-tool">
+                    <header-right></header-right>
+                </div>
+            </div>
+            <div class="bg-head-content" [class.fullContainer]="appService.getViewMode()">
+            </div>
+        </div>
+        <div class="container" [class.fullContainer]="appService.getViewMode()">
+            <div class="container-content">
+                <div class="example-loading-shade" *ngIf="isLoadingResults">
+                    <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+                </div>
+                <div class="table-head">
+                    <div class="table-head-result">
+                        <mat-form-field floatLabel="never" style="font-size: 13px;">
+                            <input type="text" #autoCompleteInput [placeholder]="'lang.filterBy' | translate" matInput
+                                [formControl]="searchContact" (click)="$event.stopPropagation()" maxlength="128">
+                        </mat-form-field>
+                    </div>
+                    <div class="table-head-tool">
+                        <mat-paginator #paginatorContactList [length]="resultsLength" [hidePageSize]="true"
+                            [pageSize]="10" class="paginatorResultList"></mat-paginator>
+                    </div>
+                </div>
+                <div style="height:90%;overflow:auto;position:absolute;width:100%;">
+                    <mat-table id="contact-list" #tableContactListSort="matSort" [dataSource]="data" matSort matSortDisableClear style="width:100%;">
+                        <ng-container matColumnDef="filling">
+                            <mat-header-cell *matHeaderCellDef style="flex: initial;width: 60px;"
+                                [class.hide-for-mobile]="appService.getViewMode()">
+                            </mat-header-cell>
+                            <mat-cell mat-cell *matCellDef="let element" style="flex: initial;width: 60px;"
+                                [class.hide-for-mobile]="appService.getViewMode()">
+                                <i class="fas fa-circle threshold_{{element.filling.thresholdLevel}}"
+                                    [title]="('lang.contactFilledTo' | translate) + ' ' + element.filling.rate + '%'"></i>
+                            </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="firstname">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{'lang.firstname' | translate}}</mat-header-cell>
+                            <mat-cell mat-cell *matCellDef="let element">
+                                {{element.firstname}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="lastname">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{'lang.lastname' | translate}}</mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                {{element.lastname}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="company">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>{{'lang.contactsParameters_company' | translate}}
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element">
+                                {{element.company}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="formatedAddress">
+                            <mat-header-cell *matHeaderCellDef style="flex: 2;"
+                                [class.hide-for-mobile]="appService.getViewMode()">
+                                {{'lang.address' | translate}}</mat-header-cell>
+                            <mat-cell *matCellDef="let element" style="flex: 2;"
+                                [class.hide-for-mobile]="appService.getViewMode()">
+                                {{element.formatedAddress}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="actions">
+                            <mat-header-cell *matHeaderCellDef>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let element" style="justify-content: flex-end;">
+                                <button mat-icon-button color="primary" *ngIf="element.enabled" [title]="'lang.suspend' | translate"
+                                    (click)="$event.stopPropagation();toggleContact(element)">
+                                    <mat-icon class="fa fa-pause fa-2x" aria-hidden="true"></mat-icon>
+                                </button>
+                                <button mat-icon-button color="accent" *ngIf="!element.enabled" [title]="'lang.authorize' | translate"
+                                    (click)="$event.stopPropagation();toggleContact(element)">
+                                    <mat-icon class="fa fa-check fa-2x" aria-hidden="true"></mat-icon>
+                                </button>
+                                <button mat-icon-button color="warn" [title]="'lang.delete' | translate" data-toggle="modal"
+                                    data-target="#changeDiffListDest"
+                                    (click)="$event.stopPropagation();deleteContact(element)">
+                                    <mat-icon class="fa fa-trash-alt fa-2x"></mat-icon>
+                                </button>
+                            </mat-cell>
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="displayedColumnsContact"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumnsContact;"
+                            routerLink="/administration/contacts/list/{{row.id}}" style="cursor: pointer;">
+                        </mat-row>
+                    </mat-table>
+                    <div class="mat-paginator"
+                        style="min-height:48px;min-height: 48px;display: flex;justify-content: end;align-items: center;padding-right: 20px;">
+                        {{resultsLength}} {{'lang.contactsAlt' | translate}}</div>
+                </div>
+                <div class="table-head">
+                </div>
+            </div>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,113 @@
+@import 'vars.scss';
+
+// import all mixins and utils to create a theme
+@import './node_modules/@angular/material/theming';
+
+// Include the base styles for Angular Material core. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+@include mat-core();
+
+// theme colors
+// @function mat-palette($base-palette, $default: 500, $lighter: 100, $darker: 700)
+$mat-maarch-primary: (
+  100: lighten( $primary, 10% ),
+  500: $primary,
+  700: darken( $primary, 10% ),
+  contrast: (
+    100: $dark-primary-text,
+    500: $light-primary-text,
+    700: $light-primary-text
+  )
+);
+
+$mat-maarch-warn: (
+  100: lighten( $warn, 10% ),
+  500: $warn,
+  700: darken( $warn, 10% ),
+  contrast: (
+    100: $dark-primary-text,
+    500: $light-primary-text,
+    700: $light-primary-text
+  )
+);
+
+$mat-maarch-accent: (
+  100: lighten( $accent, 10% ),
+  500: $accent,
+  700: darken( $accent, 10% ),
+  contrast: (
+    100: $dark-primary-text,
+    500: $light-primary-text,
+    700: $light-primary-text
+  )
+);
+
+$primary: mat-palette($mat-maarch-primary,500);
+$accent: mat-palette($mat-maarch-accent,500);
+$warn: mat-palette($mat-maarch-warn,500);
+
+// create theme from palettes
+$theme: mat-light-theme($primary, $accent, $warn);
+
+// apply theme
+@include angular-material-theme($theme);
+
+[color=primary], .primary {
+    color: mat-color($primary, 500);
+}
+
+[color=secondary], .secondary {
+  color: $secondary;
+}
+
+[color=warn], .warn {
+    color: mat-color($warn, 500);
+}
+
+[color=accent], .accent {
+    color: mat-color($accent, 500);
+}
+
+[bgcolor=primary] {
+  background-color: mat-color($primary, 500);
+}
+
+[bgcolor=warn] {
+  background-color: mat-color($warn, 500);
+}
+
+[bgcolor=accent] {
+  background-color: mat-color($accent, 500);
+}
+
+.jstree-proton .jstree-clicked {
+    background : mat-color($primary, 100) !important;
+}
+.jstree-proton :not(.jstree-disabled).jstree-hovered {
+    background: mat-color($primary, 100) !important;
+    box-shadow: inset 0 0 1px mat-color($primary, 500) !important;
+}
+.jstree-proton .jstree-disabled:hover {
+  cursor:not-allowed;
+}
+
+.dndFile{
+  border: dashed 5px grey;
+  padding:10px;
+  text-align:center;
+  opacity:0.5;
+  font-size:15px;
+  font-weight:bolder;
+  margin:20px;
+
+}
+
+.dndFileHighlighted {
+  opacity : 1 !important;
+  border: dashed 5px mat-color($primary, 500) !important;
+  color : mat-color($primary, 500);
+}
+
+.cdk-textarea-autosize {
+  min-height: 18px !important;
+}

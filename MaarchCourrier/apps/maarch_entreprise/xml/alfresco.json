@@ -1,0 +1,30 @@
+{
+    "mapping": {
+        "document" : {
+            "cm:title": "subject",
+            "cm:description": "alt_identifier",
+            "ec:priorityLabel" : "priorityLabel",
+            "ec:alt_identifier": "alt_identifier",
+            "ec:admission_date": "admission_date",
+            "ec:currentDate" : "currentDate",
+            "ec:destUserLabel" : "destUserLabel",
+            "ec:destinationLabel" : "destinationLabel",
+            "ec:doc_date" : "doc_date",
+            "ec:doctypeLabel" : "doctypeLabel",
+            "ec:initiatorLabel" : "initiatorLabel",
+            "ec:process_limit_date" : "process_limit_date",
+            "ec:senderCompany" : "senderCompany_company",
+            "ec:subject" :"subject",
+	    "ec:category_id":"category_id"
+        },
+        "attachment" : {
+            "cm:name": "title",
+            "ec:identify" : "identifier",
+            "ec:title": "subject",
+            "ec:typeLabel": "typeLabel"
+        },
+        "folder" : {
+            "cm:description": "une description"
+        }
+    }
+}

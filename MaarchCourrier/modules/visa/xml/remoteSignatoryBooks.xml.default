@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <signatoryBookEnabled>maarchParapheur</signatoryBookEnabled>
+    <signatoryBook>
+        <id>maarchParapheur</id>
+        <userId>ccornillac@maarch.com</userId>
+        <password>maarch</password>
+        <url>http://preview.maarchparapheur.com/</url>
+    </signatoryBook>
+    <signatoryBook>
+        <id>ixbus</id>
+        <userId></userId>
+        <password></password>
+        <url></url>
+        <organizationId>9</organizationId>
+        <ixbusIdEtatRefused>14</ixbusIdEtatRefused>
+        <ixbusIdEtatValidated>2</ixbusIdEtatValidated>
+    </signatoryBook>
+    <signatoryBook>
+        <id>iParapheur</id>
+        <userId></userId>
+        <password></password>
+        <url>https://secure-iparapheur-partenaires.libriciel.fr/ws-iparapheur</url>
+        <certPath>/var/www/html/maarchdev/modules/visa/xml/serveur_iparapheur.demonstrations.adullact.org.pem</certPath>
+        <certPass></certPass>
+        <certType>pem</certType>
+        <defaultType>Courrier</defaultType>
+        <defaultSousType>signature via service achat</defaultSousType>
+        <errorCode>KO</errorCode>
+        <visaState>Vise</visaState>
+        <signState>Signe</signState>
+        <refusedVisa>RejetVisa</refusedVisa>
+        <refusedSign>RejetSignataire</refusedSign>
+    </signatoryBook>
+    <signatoryBook>
+        <id>fastParapheur</id>
+        <subscriberId></subscriberId>
+        <url>https://demo-parapheur.dfast.fr/parapheur-soap/soap/v1/Documents?wsdl</url>
+        <certPath>/var/www/html/maarchdev/modules/visa/xml/92091.p12</certPath>
+        <certPass></certPass>
+        <certType>P12</certType>
+        <validatedState>Signé</validatedState>
+        <refusedState>Refusé</refusedState>
+    </signatoryBook>
+    <signatoryBook>
+        <id>xParaph</id>
+        <url>https://preprodssl.ssl.spl-xdemat.fr/Xparaph/wsdl/wsdl.php</url>
+        <userGeneric>
+            <siret></siret>
+            <login></login>
+            <password></password>
+        </userGeneric>
+        <docutype>101</docutype>
+        <docustype>9</docustype>
+    </signatoryBook>
+</root>

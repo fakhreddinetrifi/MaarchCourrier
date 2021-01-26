@@ -1,0 +1,12 @@
+@import '../../../../css/vars.scss';
+
+.badge {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 10px !important;
+    color: white;
+    font-weight: normal;
+    border-radius: .25em;
+    background: $primary;
+    margin: 5px;
+}

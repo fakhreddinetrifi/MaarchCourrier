@@ -1,0 +1,22 @@
+<div class="mat-dialog-content-container">
+    <h1 mat-dialog-title>
+        <span style="flex: 1;" [title]="'lang.linkResource' | translate">
+            {{'lang.linkResource' | translate}}
+        </span>
+        <button [title]="'lang.close' | translate" mat-icon-button (click)="dialogRef.close();">
+            <mat-icon class="fa fa-times"></mat-icon>
+        </button></h1>
+    <mat-dialog-content>
+        <div class="bg-primary">
+            <app-criteria-tool #appCriteriaTool [openedPanel]="true" (searchUrlGenerated)="appSearchResultList.launchSearch($event)"
+            [defaultCriteria]="['chrono', 'subject','recipients','senders']"></app-criteria-tool>
+            <div id="toolTemplate" style="padding-top: 10px;"></div>
+        </div>
+        <app-search-result-list #appSearchResultList [actionMode]="false" [hideFilter]="true" [appCriteriaTool]="appCriteriaTool" [standalone]="true"></app-search-result-list>
+    </mat-dialog-content>
+    <span class="divider-modal"></span>
+    <div mat-dialog-actions class="actions">
+        <button mat-raised-button color="primary"
+            (click)="linkResources()" [disabled]="!isSelectedResources()">{{'lang.linkSelectedResources' | translate}}</button>
+    </div>
+</div>

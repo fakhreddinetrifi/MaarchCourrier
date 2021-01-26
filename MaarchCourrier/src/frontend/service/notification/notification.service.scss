@@ -1,0 +1,39 @@
+@import '../../css/vars.scss';
+
+.notif-container {
+    display: flex;
+    align-items: center;
+    padding-top: 25px;
+    padding-bottom: 25px;
+
+    cursor: pointer;
+
+    &-icon {
+        display: flex;
+        width:50px;
+        justify-content: center;
+    }
+
+    &-content {
+        display: flex;
+        flex: 1;
+        justify-content: center;
+
+        &-msg {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}
+
+::ng-deep.mat-snack-bar-container.error-snackbar  {
+    color: $warn;
+    background: white;
+    border: solid 1px $warn;
+}
+  
+::ng-deep.mat-snack-bar-container.success-snackbar  {
+    color: $primary;
+    background: white;
+    border: solid 1px $primary;
+}

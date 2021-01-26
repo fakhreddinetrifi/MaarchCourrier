@@ -1,0 +1,62 @@
+@import '../../../css/vars.scss';
+
+.mat-icon {
+    height: auto;
+}
+
+.mat-stroked-button {
+    border-radius: 20px;
+    border-color: #135F7F;
+    color: #135F7F;
+}
+
+::ng-deep.actionListMenu {
+    .mat-menu-content {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
+.folderAction, .followAction {
+    .mat-icon {
+        font-size:20px;
+        color: $warn;
+    }
+}
+
+.basketGroupName {
+    color: $primary;
+    padding-left: 10px;
+    padding-right: 10px; 
+}
+
+.labelBasket {
+    color: rgb(102, 102, 102);
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.noAvailableBasket {
+    text-align: center;
+    font-size: 12px;
+    opacity: 0.5;
+    font-style: italic;
+    padding: 22px;
+}
+
+.freezeIcon {
+    color: $primary;
+}
+
+.bindidngIcon {
+    color: $primary;
+    margin-left: 5px;
+}
+
+.isSelectedMenu {
+    background: $secondary;
+  }
+
+.notSelectedMenu {
+    background: white;
+}

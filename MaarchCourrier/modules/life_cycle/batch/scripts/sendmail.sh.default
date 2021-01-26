@@ -1,0 +1,5 @@
+#!/bin/sh
+cd /var/www/MaarchCourrier/modules/life_cycle/batch/
+emailsPath='/var/www/MaarchCourrier/modules/life_cycle/batch/process_emails.php'
+php $emailsPath -cs /var/www/MaarchCourrier/modules/sendmail/batch/config/config.xml -c /var/www/MaarchCourrier/modules/life_cycle/batch/config/config_extract_data.xml
+

@@ -1,0 +1,37 @@
+<div class="mat-dialog-content-container">
+    <h1 mat-dialog-title>{{'lang.exportDatas' | translate}}</h1>
+    <div mat-dialog-content>
+        <div *ngIf="loadingExport" class="loader">
+            <mat-spinner></mat-spinner>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <mat-form-field appearance="outline">
+                    <mat-label>{{'lang.format' | translate}}</mat-label>
+                    <mat-select placeholder="{{'lang.format' | translate}}" [(ngModel)]="exportModel.format">
+                        <mat-option *ngFor="let format of formats" [value]="format">
+                            {{format}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-md-6">
+                <mat-form-field appearance="outline">
+                    <mat-label>{{'lang.delimiter' | translate}}</mat-label>
+                    <mat-select placeholder="{{'lang.delimiter' | translate}}" [(ngModel)]="exportModel.delimiter"
+                        [disabled]="exportModel.format != 'csv'">
+                        <mat-option *ngFor="let delimiter of delimiters" [value]="delimiter">
+                            {{delimiter}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+    <span class="divider-modal"></span>
+    <div mat-dialog-actions class="actions">
+        <button mat-raised-button mat-button color="primary"
+            (click)="exportData();">{{'lang.toExport' | translate}}</button>
+        <button mat-raised-button mat-button [mat-dialog-close]="">{{'lang.cancel' | translate}}</button>
+    </div>
+</div>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ROOT>
+    <CONFIG>
+        <Lang>fr</Lang> <!-- fr, en-->
+        <MaarchDirectory>/var/www/html/MaarchCourrier/</MaarchDirectory>
+        <LogLevel>INFO</LogLevel> <!-- DEBUG, INFO, NOTICE, WARNING, ERROR-->
+        <DisplayedLogLevel>INFO</DisplayedLogLevel> <!-- DEBUG, INFO, NOTICE, WARNING, ERROR-->
+        <dateToPurgeDEL>31/12/2019</dateToPurgeDEL> <!-- FORMAT : DD/MM/YYYY date à partir de laquelle on purge en remontant le passé les courriers et PJ supprimées, si vide, ne sera pas purgé -->
+        <dateToPurgeOBS>31/12/2019</dateToPurgeOBS> <!-- FORMAT : DD/MM/YYYY date à partir de laquelle on purge en remontant le passé les PJ obsolètes, si vide, ne sera pas purgé -->
+        <debug>true</debug> <!-- NO PURGE ONLY SIMULATION, entry false to launch the real purge -->
+    </CONFIG>
+    <CONFIG_BASE>
+        <databaseserver>127.0.0.1</databaseserver>
+        <databaseserverport>5432</databaseserverport>
+        <databasetype>POSTGRESQL</databasetype>
+        <databasename>MaarchCourrier</databasename>
+        <databaseuser>maarch</databaseuser>
+        <databasepassword>maarch</databasepassword>
+    </CONFIG_BASE>
+    <LOG4PHP>
+        <enabled>true</enabled>
+        <Log4PhpLogger>loggerTechnique</Log4PhpLogger>
+        <Log4PhpBusinessCode>life_cycle_purge</Log4PhpBusinessCode>
+        <Log4PhpConfigPath>/var/www/html/MaarchCourrier/apps/maarch_entreprise/xml/log4php.xml</Log4PhpConfigPath>
+    </LOG4PHP>
+</ROOT>

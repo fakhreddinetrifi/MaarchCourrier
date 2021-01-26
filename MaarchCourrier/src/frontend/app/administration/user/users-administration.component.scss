@@ -1,0 +1,31 @@
+@import '../../../css/vars.scss';
+
+
+button:disabled{
+    opacity:0.3 !important;
+}
+
+.statusUserLabelWarn {
+    color : $warn;
+}
+
+.statusUserLabelPrimary {
+    color : $primary;
+}
+
+.webserviceAccount {
+    color: #666;
+    width: 37px;
+    height: 37px;
+    font-size: x-small;
+    border-radius: 18px !important;
+}
+
+.mat-button-toggle-checked {
+    background-color: #F99830 !important;
+    color: white;
+}
+
+.admin {
+    font-weight: bold;
+}

@@ -1,0 +1,35 @@
+@import 'vars.scss';
+
+.alert-message {
+    margin: 20px 0;
+    padding: 10px;
+    max-width: 450px;
+    border-left: 3px solid #eee;
+
+    p {
+        padding: 0;
+    }
+
+    &-success {
+        background-color: #F4FDF0;
+        border-color: $accent;
+        color: darken($accent, 10%);
+    }
+
+    &-danger {
+        background-color: #8e3e521a;
+        border-color: $warn;
+        color: darken($warn, 10%);
+    }
+
+    &-info {
+        background-color: #f4f8fa;
+        border-color: $primary;
+        color: darken($primary, 10%);
+    }
+
+    &-default {
+        background-color: #EEE;
+        border-color: #B4B4B4;
+    }
+}

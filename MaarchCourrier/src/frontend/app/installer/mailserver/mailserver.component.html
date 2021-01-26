@@ -1,0 +1,85 @@
+<div class="stepContent">
+    <h2 class="stepContentTitle"><i class="fa fa-mail-bulk"></i> {{'lang.stepMailServer' | translate}}</h2>
+    <div class="alert-message alert-message-info" role="alert" style="margin-top: 30px;min-width: 100%;"
+        [innerHTML]="'lang.stepMailServer_desc' | translate">
+    </div>
+    <div class="alert-message alert-message-danger" role="alert" style="margin-top: 30px;min-width: 100%;"
+    [innerHTML]="'lang.stepMailServer_warning' | translate">
+</div>
+    <mat-drawer-container autosize>
+        <mat-drawer-content>
+            <div style="width: 99%;">
+                <form [formGroup]="stepFormGroup" style="display: contents;">
+                    <mat-form-field>
+                        <mat-select #smtpType name="smtpType" [placeholder]="'lang.configurationType' | translate"
+                            formControlName="type" required>
+                            <mat-option *ngFor="let type of smtpTypeList" [value]="type.id">
+                                {{type.label}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <div class="row" style="margin:0px;">
+                        <div class="col-md-2">
+                            <mat-form-field>
+                                <mat-select name="SMTPSecure" [placeholder]="'lang.smtpAuth' | translate" formControlName="secure">
+                                    <mat-option *ngFor="let security of smtpSecList" [value]="security.id">
+                                        {{security.label}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-9">
+                            <mat-form-field>
+                                <input matInput name="host" formControlName="host" [placeholder]="'lang.host' | translate" required>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-1">
+                            <mat-form-field>
+                                <input name="port" type="number" matInput formControlName="port"
+                                    [placeholder]="'lang.port' | translate" required>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <mat-slide-toggle color="primary" name="SMTPAuth" formControlName="auth">
+                        {{'lang.enableAuth' | translate}}
+                    </mat-slide-toggle>
+                    <mat-form-field>
+                        <input name="user" formControlName="user" matInput placeholder="{{'lang.id' | translate}}" required>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <input name="password" [type]="hidePassword ? 'password' : 'text'" formControlName="password"
+                            matInput [placeholder]="'lang.password' | translate" required>
+                        <mat-icon color="primary" style="cursor: pointer;" matSuffix
+                            (click)="hidePassword = !hidePassword" class="fa fa-2x"
+                            [ngClass]="[hidePassword ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <input name="mailFrom" formControlName="from" required matInput [placeholder]="'lang.mailFrom' | translate">
+                    </mat-form-field>
+                </form>
+            </div>
+        </mat-drawer-content>
+        <mat-drawer #checkMailserverContent mode="side" position="end" style="padding:10px;width: 350px;">
+            <mat-nav-list disableRipple="true" style="display: flex;flex-direction: column;">
+                <h3 mat-subheader>{{'lang.emailSendTest' | translate}}</h3>
+                <mat-form-field>
+                    <input name="recipientTest" matInput placeholder="{{'lang.mailTo' | translate}}" [(ngModel)]="recipientTest"
+                        [disabled]="emailSendLoading">
+                    <mat-icon *ngIf="!emailSendLoading" title="{{'lang.beginSendTest' | translate}}" (click)="testEmailSend()"
+                        color="primary" style="cursor: pointer;" matSuffix class="fa fa-paper-plane fa-2x"></mat-icon>
+                </mat-form-field>
+                <mat-list-item *ngIf="emailSendResult.msg != ''">
+                    <mat-icon mat-list-icon class="fas {{emailSendResult.icon}} fa-2x"></mat-icon>
+                    <p mat-line> {{emailSendResult.msg}} </p>
+                </mat-list-item>
+            </mat-nav-list>
+            <div class="bash" *ngIf="this.emailSendResult.msg === ('lang.emailSendFailed' | translate)">
+                {{this.emailSendResult.debug}}
+            </div>
+        </mat-drawer>
+    </mat-drawer-container>
+    <div class="text-center">
+        <button mat-raised-button type="button" color="primary" (click)="checkMailserverContent.open()"
+            [disabled]="!stepFormGroup.valid">{{'lang.checkSendmail' | translate}}</button>
+    </div>
+</div>

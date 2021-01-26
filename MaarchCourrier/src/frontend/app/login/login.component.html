@@ -1,0 +1,33 @@
+<div class="login-container">
+    <div class="login-content" [class.showForm]="showForm" [style.background-image]="'url(../rest/images?image=loginPage)'">
+        <div class="login-form">
+            <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
+                <mat-icon svgIcon="maarchLogoFull" class="maarchLogo"></mat-icon>
+                <div style="color: white;font-size: 14px;" [innerHTML]="authService.loginMessage | safeHtml"></div>
+                <p style="color: white;font-size: 14px;font-weight: bold;">{{authService.applicationName}}</p>
+                <div style="padding-left: 30px;padding-right: 30px;">
+                    <mat-form-field *ngIf="['cas', 'keycloak', 'sso'].indexOf(authService.authMode) === -1" class="input-row login" appearance="outline" style="padding-bottom: 0px;">
+                        <input id="login" name="login" matInput [placeholder]="'lang.id' | translate" formControlName="login"
+                            type="text">
+                    </mat-form-field>
+                    <mat-form-field *ngIf="['cas', 'keycloak', 'sso'].indexOf(authService.authMode) === -1" class="input-row" appearance="outline">
+                        <input id="password" name="password" matInput [placeholder]="'lang.password' | translate" type="password"
+                            formControlName="password">
+                        <mat-hint align="end" *ngIf="authService.authMode === 'standard'"><a
+                                routerLink="/forgot-password" class="infoLogin">{{'lang.forgotPassword' | translate}} ?</a></mat-hint>
+                        <mat-hint align="end" *ngIf="authService.authMode === 'ldap'"><span
+                                class="infoLogin">{{'lang.' + authService.authMode + 'Enabled' | translate}}</span></mat-hint>
+                    </mat-form-field>
+                </div>
+                <div *ngIf="['cas', 'keycloak', 'sso'].indexOf(authService.authMode) > -1" class="alert-message alert-message-info" role="alert" style="max-width: 100%;">
+                    {{'lang.' + authService.authMode + 'Enabled' | translate}}
+                </div>
+                <button id="submit" type="submit" mat-stroked-button [disabled]="loginForm.invalid || loading"
+                    style="color: white;border-color: #24b0ed;background: #24b0ed;">{{'lang.LOGIN' | translate}}</button>
+            </form>
+        </div>
+        <footer>
+            Maarch courrier {{environment.VERSION}} Powered by {{environment.AUTHOR}}
+        </footer>
+    </div>
+</div>

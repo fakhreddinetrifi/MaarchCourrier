@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ROOT>
+    <java>
+        <enabled>false</enabled>
+    </java>
+    <onlyoffice>
+        <enabled>true</enabled>
+        <server_uri>192.168.60.48</server_uri>
+        <server_port>4242</server_port>
+        <server_ssl>false</server_ssl>
+        <server_secret></server_secret>
+        <server_authorization_header>Authorization</server_authorization_header>
+    </onlyoffice>
+    <collaboraonline>
+        <enabled>false</enabled>
+        <server_uri>collaboraonline.maarchcourrier.com</server_uri>
+        <server_port>9980</server_port>
+        <server_ssl>false</server_ssl>
+    </collaboraonline>
+</ROOT>

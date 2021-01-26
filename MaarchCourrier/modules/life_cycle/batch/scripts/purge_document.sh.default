@@ -1,0 +1,5 @@
+#!/bin/sh
+
+path='/var/www/html/maarch_courrier/modules/life_cycle/batch'
+cd $path
+php  'process_purge.php' -c /var/www/html/maarch_courrier/modules/life_cycle/batch/config/config_purge.xml -coll "letterbox_coll"

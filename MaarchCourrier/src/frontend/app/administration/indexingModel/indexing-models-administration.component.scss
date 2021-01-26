@@ -1,0 +1,14 @@
+@import '../../../css/vars.scss';
+
+.dataLabelWarn {
+    color : $warn;
+}
+
+.dataLabelPrimary {
+    color : $primary;
+}
+
+.label{
+    font-size: 75%;
+    font-weight: 700;
+}

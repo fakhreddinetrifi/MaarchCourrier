@@ -1,0 +1,15 @@
+.mat-list-item[draggable="false"]:hover{
+    background: inherit;
+}
+
+.mat-list-item[draggable="false"]{
+    cursor: not-allowed !important;
+}
+
+.mat-list-item[draggable="true"]{
+    cursor: pointer;
+}
+
+.mat-list-item[draggable="true"] mat-icon{
+    cursor: move;
+}

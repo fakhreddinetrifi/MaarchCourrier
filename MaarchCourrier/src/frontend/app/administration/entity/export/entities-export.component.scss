@@ -1,0 +1,26 @@
+::ng-deep.mat-dialog-container {
+  position: relative;
+}
+
+.mat-dialog-content {
+  min-height: 150px;
+  padding-bottom: 10px;
+  overflow-x: hidden;
+}
+
+.actions {
+  justify-content: center;
+}
+
+.loader {
+  position: absolute;
+  display: flex;
+  width: 100%;
+  left: 0px;
+  top: 0px;
+  height: 100%;
+  background: #fff9;
+  z-index: 1;
+  align-items: center;
+  justify-content: center;
+}

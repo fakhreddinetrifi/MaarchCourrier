@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ROOT>
+    <res_letterbox>
+        <type_id>101</type_id>
+        <status>NUMQUAL</status>
+        <priority>poiuytre1357nbvc</priority>
+        <indexingModelId>1</indexingModelId>
+    </res_letterbox>
+    <res_attachments>
+        <attachment_type>simple_attachment</attachment_type>
+    </res_attachments>
+    <basketRedirection_afterUpload>NumericBasket</basketRedirection_afterUpload><!--basketId-->
+    <m2m_communication>https://cchaplin:maarch@demo.maarchcourrier.com</m2m_communication><!--moyen de communication de l'instance : email ou uri -->
+</ROOT>

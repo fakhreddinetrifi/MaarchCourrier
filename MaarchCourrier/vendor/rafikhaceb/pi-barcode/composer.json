@@ -1,0 +1,7 @@
+{
+  "name": "rafikhaceb/pi-barcode",
+  "description": "Composer ready for pi_barcode (https://www.pitoo.com/codes-a-barres-p3)",
+  "require": {
+      "php": "^5.3.3 || ^7.0"
+  }
+}

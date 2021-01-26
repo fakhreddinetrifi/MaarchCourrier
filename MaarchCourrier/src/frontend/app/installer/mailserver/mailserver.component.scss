@@ -1,0 +1,55 @@
+@import '../../../css/vars.scss';
+
+
+.stepContent {
+    // max-width: 850px;
+    margin: auto;
+
+    .stepContentTitle {
+        color: $primary;
+        margin-bottom: 30px;
+        border-bottom: solid 1px;
+        padding: 0;
+    }
+}
+
+.backgroundList {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 10px;
+}
+
+.selected {
+    transition: all 0.3s;
+    opacity: 1 !important;
+    border: solid 10px $secondary !important;
+}
+
+.backgroundItem {
+    border: solid 0px $secondary;
+    opacity: 0.5;
+    transition: all 0.3s;
+    cursor: pointer;
+    height: 120px;
+    background-size: cover !important;
+}
+
+.backgroundItem:hover {
+    transition: all 0.3s;
+    opacity: 1 !important;
+}
+
+.bash {
+    background: #34495e;
+    height: 310px;
+    border-radius: 5px;
+    top: 40px;
+    display: absolute;
+    color: #fff;
+    padding: 10px;
+    margin: 10px;
+}
+
+mat-drawer-container {
+    background: none !important;
+}

@@ -1,0 +1,18 @@
+.mat-list-item.disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.mat-list-item.disabled:focus,.mat-list-item.disabled:hover,.mat-list-item.disabled:active {
+    background: initial;
+}
+
+.selectFile {
+    text-align: center;
+
+    span {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+}

@@ -1,0 +1,82 @@
+<div class="mat-dialog-content-container">
+    <h1 mat-dialog-title>{{data.action.label}}</h1>
+    <div mat-dialog-content>
+        <div *ngIf="loading" class="loading" style="display:flex;height:100%;">
+            <mat-spinner style="margin:auto;"></mat-spinner>
+        </div>
+        <mat-sidenav-container autosize style="height:100%;">
+            <mat-sidenav-content style="background: white;">
+                <div class="row" style="margin: 0;">
+                    <div class="col-md-12">
+                        {{'lang.makeActionOn' | translate}}
+                        <b *ngIf="data.resIds.length === 0" color="primary"
+                            class="highlight">{{'lang.currentIndexingMail' | translate}}</b>
+                        <b *ngIf="data.resIds.length == 1" color="primary"
+                            class="highlight">{{data.resource.chrono}}</b>
+                        <b *ngIf="data.resIds.length > 1" color="primary" class="highlight">{{data.resIds.length}}
+                            {{'lang.elements' | translate}}</b> ?
+                    </div>
+                    <div *ngIf="data.resIds.length > 0" style="padding:10px;display: flex;flex-direction: column;">
+                        <mat-checkbox color="primary" *ngFor="let inteKey of integrationsInfo | keyvalue"
+                            (click)="toggleIntegration(inteKey.key)"
+                            [checked]="data.resource.integrations[inteKey.key]">{{'lang.' + inteKey.key + '_doc' | translate}}
+                        </mat-checkbox>
+                    </div>
+                    <div *ngIf="resourcesMailing.length > 0" class="alert-message alert-message-info" role="alert">
+                        <p>{{'lang.mailingActionInformations' | translate}}</p>
+                        <ul>
+                            <li *ngFor="let ressource of resourcesMailing">
+                                <b>{{ressource.alt_identifier}}</b>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <app-i-paraph #iParapheur *ngIf="signatoryBookEnabled=='iParapheur'"
+                            [additionalsInfos]="additionalsInfos"
+                            [externalSignatoryBookDatas]="externalSignatoryBookDatas">
+                        </app-i-paraph>
+                        <app-ixbus-paraph #ixbus *ngIf="signatoryBookEnabled=='ixbus'"
+                            [additionalsInfos]="additionalsInfos"
+                            [externalSignatoryBookDatas]="externalSignatoryBookDatas">
+                        </app-ixbus-paraph>
+                        <app-fast-paraph #fastParapheur *ngIf="signatoryBookEnabled=='fastParapheur'"
+                            [additionalsInfos]="additionalsInfos"
+                            [externalSignatoryBookDatas]="externalSignatoryBookDatas">
+                        </app-fast-paraph>
+                        <app-maarch-paraph #maarchParapheur *ngIf="signatoryBookEnabled=='maarchParapheur'"
+                            [additionalsInfos]="additionalsInfos"
+                            [externalSignatoryBookDatas]="externalSignatoryBookDatas">
+                        </app-maarch-paraph>
+                        <app-x-paraph #xParaph *ngIf="signatoryBookEnabled=='xParaph'"
+                            [additionalsInfos]="additionalsInfos"
+                            [externalSignatoryBookDatas]="externalSignatoryBookDatas"></app-x-paraph>
+                        <div class="col-md-12"
+                            *ngIf="additionalsInfos.noAttachment.length != 0 && externalSignatoryBookDatas.objectSent == 'attachment'">
+                            <div>
+                                <div class="alert-message alert-message-danger mailList" role="alert">
+                                    <p>
+                                        {{'lang.canNotMakeAction' | translate}} :
+                                    </p>
+                                    <ul>
+                                        <li *ngFor="let attachment of additionalsInfos.noAttachment">
+                                            <b>{{attachment.alt_identifier}}</b> : {{'lang.' + attachment.reason | translate}}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12" style="padding-top: 10px;">
+                        <app-note-editor #noteEditor [resIds]="data.resIds"></app-note-editor>
+                    </div>
+                </div>
+            </mat-sidenav-content>
+        </mat-sidenav-container>
+    </div>
+    <span class="divider-modal"></span>
+    <div mat-dialog-actions class="actions">
+        <button mat-raised-button mat-button color="primary" [disabled]="loading || !isValidAction()"
+            (click)="onSubmit()">{{'lang.validate' | translate}}</button>
+        <button mat-raised-button mat-button [disabled]="loading" [mat-dialog-close]="">{{'lang.cancel' | translate}}</button>
+    </div>
+</div>

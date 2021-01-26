@@ -1,0 +1,104 @@
+<div class="mat-dialog-content-container">
+    <h1 mat-dialog-title>{{data.action.label}}</h1>
+    <div mat-dialog-content *ngIf="!loadingInit">
+        <div *ngIf="loading" class="loading" style="display:flex;height:100%;">
+            <mat-spinner style="margin:auto;"></mat-spinner>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p *ngIf="arMode == 'both' || acknowledgement.sendEmail || acknowledgement.sendPaper">
+                    {{'lang.makeActionOn' | translate}}
+                    <b *ngIf="data.resIds.length === 0" color="primary"
+                        class="highlight">{{'lang.currentIndexingMail' | translate}}</b>
+                    <b *ngIf="data.resIds.length == 1" color="primary" class="highlight">{{data.resource.chrono}}</b>
+                    <b *ngIf="data.resIds.length > 1" color="primary" class="highlight">{{data.resIds.length}}
+                        {{'lang.elements' | translate}}</b> ?
+                    <div *ngIf="arMode == 'both'">
+                        <mat-slide-toggle [(ngModel)]="manualAR" color="primary"
+                            (change)="toggleArManual($event.checked)">
+                            {{'lang.editAcknowledgementReceipt' | translate}}</mat-slide-toggle>
+                    </div>
+                    <div *ngIf="manualAR && realResSelected.length > 0">
+                        <mat-form-field floatLabel="never">
+                            <span matPrefix><span
+                                    class="attachLabel">{{'lang.object' | translate}}&nbsp;:&nbsp;</span>[AR]&nbsp;</span>
+                            <input matInput [(ngModel)]="emailsubject" maxlength="100">
+                        </mat-form-field>
+                        <div class="models">
+                            <plugin-select-search *ngIf="availableEmailModels.length > 0" [label]="'lang.emailModel' | translate"
+                                [placeholderLabel]="'lang.emailModel' | translate" [datas]="availableEmailModels"
+                                [formControlSelect]="templateEmailListForm"
+                                (afterSelected)="mergeEmailTemplate($event)">
+                            </plugin-select-search>
+
+                            <plugin-select-search #templateList *ngIf="availableSignEmailModels.length > 0"
+                                [label]="'lang.emailSignatures' | translate" [placeholderLabel]="'lang.emailSignatures' | translate"
+                                [datas]="availableSignEmailModels" [formControlSelect]="emailSignListForm"
+                                (afterSelected)="mergeSignEmailTemplate($event)">
+                            </plugin-select-search>
+                        </div>
+                        <textarea style="padding-top: 10px;" name="emailSignature" id="emailSignature"
+                            [(ngModel)]="emailContent"></textarea>
+                    </div>
+                    <div *ngIf="acknowledgement.alreadySend.number">
+                        <div class="alert-message alert-message-info acknowledgementList" role="alert">
+                            <p>
+                                <b>{{acknowledgement.alreadySend.number}}</b> {{'lang.arAlreadySend' | translate}} :
+                            </p>
+                            <ul>
+                                <li *ngFor="let info of acknowledgement.alreadySend.list">
+                                    {{info.alt_identifier}}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div *ngIf="acknowledgement.alreadyGenerated.number">
+                        <div class="alert-message alert-message-info acknowledgementList" role="alert">
+                            <p>
+                                <b>{{acknowledgement.alreadyGenerated.number}}</b> {{'lang.arAlreadyGenerated' | translate}} :
+                            </p>
+                            <ul>
+                                <li *ngFor="let info of acknowledgement.alreadyGenerated.list">
+                                    {{info.alt_identifier}}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div *ngIf="acknowledgement.noSendAR.number">
+                        <div class="alert-message alert-message-info acknowledgementList" role="alert">
+                            <p><b>{{acknowledgement.noSendAR.number}}</b> {{'lang.canNotSendAr' | translate}} :</p>
+                            <ul>
+                                <li *ngFor="let info of acknowledgement.noSendAR.list">
+                                    <b>{{info.alt_identifier != null ? info.alt_identifier : 'lang.undefined' | translate}}</b> :
+                                    {{info.info}}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div *ngIf="acknowledgement.sendEmail || acknowledgement.sendPaper"
+                        class="alert-message alert-message-success acknowledgementList" role="alert"
+                        style="padding: 10px;">
+                        <div *ngIf="acknowledgement.sendEmail">
+                            <b>{{acknowledgement.sendEmail}}</b>
+                            {{'lang.readyToSendElectronicAr' | translate}}
+                        </div>
+                        <div *ngIf="acknowledgement.sendPaper">
+                            <b>{{acknowledgement.sendPaper}}</b>
+                            {{'lang.readyToGeneratePaperAr' | translate}}
+                        </div>
+                    </div>
+            </div>
+            <div class="col-md-12" *ngIf="acknowledgement.sendEmail || acknowledgement.sendPaper">
+                <app-note-editor #noteEditor [resIds]="data.resIds"></app-note-editor>
+            </div>
+        </div>
+    </div>
+    <span class="divider-modal"></span>
+    <div mat-dialog-actions class="actions">
+        <button mat-raised-button mat-button color="primary"
+            [disabled]="loading || (!acknowledgement.sendEmail && !acknowledgement.sendPaper)"
+            (click)="onSubmit()">{{'lang.validate' | translate}}</button>
+        <button mat-raised-button mat-button [disabled]="loading" [mat-dialog-close]="">{{'lang.cancel' | translate}}</button>
+    </div>
+</div>

@@ -1,0 +1,14 @@
+@import '../../../css/vars.scss';
+
+.indexingModelLabel {
+    ::ng-deep.mat-form-field-wrapper {
+        padding: 0px;
+    }
+}
+
+.defaultModel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 10px;
+}

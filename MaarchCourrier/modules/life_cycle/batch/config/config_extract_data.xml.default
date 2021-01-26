@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ROOT>
+    <CONFIG>
+        <Lang>fr</Lang> <!-- fr, en-->
+        <MaarchDirectory>/var/www/MaarchCourrier/</MaarchDirectory>
+        <MaarchApps>maarch_entreprise</MaarchApps>
+        <customId>maarch</customId>
+        <LogLevel>INFO</LogLevel> <!-- DEBUG, INFO, NOTICE, WARNING, ERROR-->
+        <DisplayedLogLevel>INFO</DisplayedLogLevel> <!-- DEBUG, INFO, NOTICE, WARNING, ERROR-->
+        <StackSizeLimit>10000</StackSizeLimit> <!-- on doc -->
+        <ExportFolder>/var/www/MaarchCourrier/modules/life_cycle/batch/files/</ExportFolder>
+		<FromDate>18 months</FromDate> <!-- ex : 18 months, 20 days, ... -->
+        <MailToNotify>yourmail@test.com</MailToNotify><!-- If multiple, separate by ','-->
+    </CONFIG>
+    <CONFIG_BASE>
+        <databaseserver>127.0.0.1</databaseserver>
+        <databaseserverport>5432</databaseserverport>
+        <databasetype>POSTGRESQL</databasetype>
+        <databasename>maarchcourrier</databasename>
+        <databaseuser>maarch</databaseuser>
+        <databasepassword>maarch</databasepassword>
+    </CONFIG_BASE>
+    <COLLECTION>
+        <Id>letterbox_coll</Id>
+        <Table>res_letterbox</Table>
+        <View>res_view_letterbox</View>
+        <VersionTable>res_version_letterbox</VersionTable>
+        <Adr>adr_x</Adr>
+    </COLLECTION>
+    <LOG4PHP>
+        <enabled>true</enabled>
+        <Log4PhpLogger>loggerTechnique</Log4PhpLogger>
+        <Log4PhpBusinessCode>extract_data</Log4PhpBusinessCode>
+        <Log4PhpConfigPath>/var/www/MaarchCourrier/apps/maarch_entreprise/xml/log4php.xml</Log4PhpConfigPath>
+    </LOG4PHP>
+</ROOT>

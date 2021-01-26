@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ROOT>
+   <ENABLED>false</ENABLED>
+   <CONNECTION_URI>https://api.sandbox.maileva.net</CONNECTION_URI>
+   <URI>https://api.sandbox.maileva.net</URI>
+</ROOT>

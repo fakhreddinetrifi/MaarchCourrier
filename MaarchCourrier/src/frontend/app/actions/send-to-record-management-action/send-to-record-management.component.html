@@ -1,0 +1,162 @@
+<div class="mat-dialog-content-container">
+    <h1 mat-dialog-title>{{data.action.label}}</h1>
+    <div mat-dialog-content>
+        <div *ngIf="checking" class="checking" color="primary"
+            style="display:flex;height:100%;justify-content: center;padding: 30px;">
+            <mat-spinner diameter="24"></mat-spinner>&nbsp;{{'lang.checkInProgress' | translate}} ...
+        </div>
+        <div *ngIf="loading" class="loading" color="primary">
+            <mat-spinner></mat-spinner>
+        </div>
+        <div *ngIf="!checking">
+            {{'lang.makeActionOn' | translate}}
+            <b *ngIf="data.resIds.length === 0" color="primary"
+                class="highlight">{{'lang.currentIndexingMail' | translate}}</b>
+            <b *ngIf="data.resIds.length === 1" color="primary" class="highlight">{{data.resource.chrono}}</b>
+            <b *ngIf="data.resIds.length > 1" color="primary" class="highlight">{{data.resIds.length}}
+                {{'lang.elements' | translate}}</b> ?
+        </div>
+        <ng-container *ngIf="!checking && resourcesErrors.length === 0">
+            <form [formGroup]="actionFormGroup" style="display: contents;">
+                <mat-form-field appearance="outline">
+                    <mat-label>{{'lang.slipLabel' | translate}}</mat-label>
+                    <input type="text" matInput formControlName="packageName">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label>{{'lang.slipId' | translate}}</mat-label>
+                    <input type="text" matInput formControlName="slipId">
+                </mat-form-field>
+                <div class="row">
+                    <div class="col-md-6">
+                        <mat-form-field>
+                            <mat-label>{{'lang.archivalAgreement' | translate}}</mat-label>
+                            <mat-select formControlName="archivalAgreement"
+                                (selectionChange)="archivalAgreementSelected($event)">
+                                <mat-option *ngFor="let agreement of archivalAgreements" [value]="agreement.id">
+                                    {{agreement.label}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6">
+                        <mat-form-field>
+                            <mat-label>{{'lang.archivalAgency' | translate}}</mat-label>
+                            <mat-select formControlName="entityArchiveRecipient"
+                                (selectionChange)="entityArchiveRecipientSelected($event)">
+                                <mat-option *ngFor="let entity of recipientArchiveEntities" [value]="entity.id">
+                                    {{entity.label}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="form-group" style="display:flex;flex-direction: row; flex-wrap: wrap;">
+                    <div class="formType ratio-2 col-sm-12">
+                        <div class="formType-title">
+                            {{'lang.transferEntity' | translate}}
+                        </div>
+                        <mat-form-field>
+                            <mat-label>{{'lang.label' | translate}}</mat-label>
+                            <input type="text" matInput formControlName="entityLabelTransferEntity">
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>{{'lang.producerService' | translate}}</mat-label>
+                            <input type="text" matInput formControlName="producerTransferEntity">
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>{{'lang.senderArchiveEntity' | translate}}</mat-label>
+                            <input type="text" matInput formControlName="senderArchiveEntity">
+                        </mat-form-field>
+                    </div>
+                    <div class="formType ratio-2 col-sm-12">
+                        <div class="formType-title">
+                            {{'lang.doctype' | translate}}
+                        </div>
+                        <mat-form-field>
+                            <mat-label>{{'lang.label' | translate}}</mat-label>
+                            <input type="text" matInput formControlName="doctype">
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>{{'lang.retentionRule' | translate}}</mat-label>
+                            <input type="text" matInput formControlName="entityRetentionRule">
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>{{'lang.retentionFinalDisposition' | translate}}</mat-label>
+                            <input type="text" matInput formControlName="doctypeRetentionFinalDisposition">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <mat-form-field *ngIf="folders.length > 0">
+                    <mat-label>{{'lang.folder' | translate}}</mat-label>
+                    <mat-select formControlName="folder">
+                        <mat-option *ngFor="let folder of folders" [value]="folder.id">
+                            {{folder.label}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-expansion-panel *ngIf="linkedResources.length > 0">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title color="primary" style="font-size:14px;">
+                            {{'lang.linkedMails' | translate}}
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <mat-list style="max-height: 350px;overflow: auto;">
+                        <mat-list-item *ngFor="let res of linkedResources">
+                            <span style="font-size: 12px;color:#666">{{res.chrono}}</span>&nbsp;-&nbsp;<span
+                                color="primary" style="font-size: 12px;">{{res.object}}</span></mat-list-item>
+                    </mat-list>
+                </mat-expansion-panel>
+                <div class="row" style="padding-top: 10px;">
+                    <div class="col-md-6">
+                        <mat-form-field appearance="outline">
+                            <mat-label>{{'lang.archiveId' | translate}}</mat-label>
+                            <input type="text" matInput formControlName="archiveId">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6">
+                        <mat-form-field>
+                            <mat-label>{{'lang.descriptionLevel' | translate}}</mat-label>
+                            <mat-select formControlName="archiveDescriptionLevel">
+                                <mat-option *ngFor="let descriptionLevel of descriptionLevels"
+                                    [value]="descriptionLevel.id">{{descriptionLevel.label}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </form>
+            <mat-tab-group>
+                <mat-tab *ngFor="let archive of archives; let i=index" label="Unité d'archive n°{{i + 1}}">
+                    <mat-form-field>
+                        <mat-label>{{'lang.id' | translate}}</mat-label>
+                        <input type="text" matInput [(ngModel)]="archive.id" disabled>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>{{'lang.label' | translate}}</mat-label>
+                        <input type="text" matInput [(ngModel)]="archive.label" disabled>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>{{'lang.type' | translate}}</mat-label>
+                        <input type="text" matInput [(ngModel)]="archive.type" disabled>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>{{'lang.descriptionLevel' | translate}}</mat-label>
+                        <mat-select [(ngModel)]="archive.descriptionLevel" required>
+                            <mat-option *ngFor="let descriptionLevel of descriptionLevels"
+                                [value]="descriptionLevel.id">{{descriptionLevel.label}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-tab>
+            </mat-tab-group>
+        </ng-container>
+        <div *ngIf="resourcesErrors.length > 0" class="alert-message alert-message-danger">
+            {{resourcesErrors[0]}}
+        </div>
+    </div>
+    <span class="divider-modal"></span>
+    <div mat-dialog-actions class="actions">
+        <button mat-raised-button mat-button color="primary" [disabled]="loading || !this.actionFormGroup.valid"
+            (click)="onSubmit('send')">{{'lang.send' | translate}}</button>
+        <button mat-raised-button mat-button color="primary" [disabled]="loading || !this.actionFormGroup.valid"
+            (click)="onSubmit('download')">{{'lang.download' | translate}}</button>
+        <button mat-raised-button mat-button [disabled]="loading"
+            [mat-dialog-close]="">{{'lang.cancel' | translate}}</button>
+    </div>
+</div>

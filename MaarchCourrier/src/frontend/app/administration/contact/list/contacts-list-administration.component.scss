@@ -1,0 +1,26 @@
+@import '../../../../css/vars.scss';
+
+.active, .active:hover , .active:active, .active:focus {
+    color: $primary;
+    border-left: solid 5px $primary;
+    background: rgba($primary, 0.14);
+}
+
+.paginatorResultList {
+    ::ng-deep.mat-paginator-range-label {
+        justify-content: flex-end;
+        display: flex;
+    }
+}
+
+.threshold_first {
+    color: #E81C2B;
+}
+
+.threshold_second {
+    color: #F4891E;
+}
+
+.threshold_third {
+    color: #0AA34F;
+}

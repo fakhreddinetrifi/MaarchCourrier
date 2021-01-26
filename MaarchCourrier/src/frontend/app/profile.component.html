@@ -1,0 +1,1012 @@
+<mat-sidenav-container autosize class="maarch-container">
+    <ng-template #adminMenuTemplate>
+        <mat-nav-list>
+            <h3 mat-subheader>{{'lang.actions' | translate}}</h3>
+            <a mat-list-item (click)="askRedirectBasket()">
+                <mat-icon color="warn" mat-list-icon class="fa fa-plane"></mat-icon>
+                <p mat-line>
+                    {{'lang.activateMyAbs' | translate}}
+                </p>
+            </a>
+            <a *ngIf="user.canModifyPassword" mat-list-item (click)="changePasswd();">
+                <mat-icon color="primary" mat-list-icon class="fa fa-key"></mat-icon>
+                <p mat-line>
+                    {{'lang.changeMyPassword' | translate}}
+                </p>
+            </a>
+        </mat-nav-list>
+    </ng-template>
+    <mat-sidenav-content>
+        <div class="bg-head">
+            <div class="bg-head-title" [class.customContainerRight]="appService.getViewMode()">
+                <div class="bg-head-title-label">
+                    <header-left></header-left>
+                </div>
+                <div class="bg-head-title-tool">
+                    <header-right></header-right>
+                </div>
+            </div>
+            <div class="bg-head-content" [class.fullContainer]="appService.getViewMode()">
+            </div>
+        </div>
+        <div class="container" [class.fullContainer]="appService.getViewMode()">
+            <div class="container-content">
+                <div *ngIf="loading" style="display:flex;height:100%;">
+                    <mat-spinner style="margin:auto;"></mat-spinner>
+                </div>
+                <mat-card *ngIf="!loading" class="card-app-content">
+                    <mat-tab-group [selectedIndex]="selectedIndex" (selectedTabChange)="initComponents($event)">
+                        <mat-tab label="{{'lang.myInformations' | translate}}">
+                            <div *ngIf="showPassword" style="margin-bottom: 5%">
+                                <form [formGroup]="firstFormGroup">
+                                    <div class="form-group">
+                                        <mat-form-field style="padding:10px;">
+                                            <input matInput placeholder="{{'lang.typeCurrentPassword' | translate}}"
+                                                formControlName="currentPasswordCtrl" required
+                                                [type]="hidePassword ? 'password' : 'text'">
+                                            <mat-icon matSuffix (click)="hidePassword = !hidePassword" class="fa fa-2x"
+                                                [ngClass]="[hidePassword ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
+                                            <mat-error
+                                                *ngIf="firstFormGroup.controls['currentPasswordCtrl'].hasError('required')">
+                                                {{'lang.requiredField' | translate}}</mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="form-group">
+                                        <div style="text-align:center;color: rgba(0,0,0,0.54);font-size: 75%;">
+                                            {{this.ruleText}}</div>
+                                        <div class="col-sm-6" style="padding-left:0px;padding-right: 0px;">
+                                            <mat-form-field style="padding:10px;">
+                                                <input matInput #inputPasswd
+                                                    placeholder="{{'lang.typeNewPassword' | translate}}"
+                                                    formControlName="newPasswordCtrl" required
+                                                    [type]="hidePassword ? 'password' : 'text'">
+                                                <mat-icon matSuffix (click)="hidePassword = !hidePassword"
+                                                    class="fa fa-2x"
+                                                    [ngClass]="[hidePassword ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
+                                                <mat-hint *ngIf="validPassword">
+                                                    <i color="accent" class="fa fa-check"></i>
+                                                    <span color="accent">{{'lang.passwordValid' | translate}}</span>
+                                                </mat-hint>
+                                                <mat-error>{{getErrorMessage()}}</mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-sm-6" style="padding-left:0px;padding-right:0px;">
+                                            <mat-form-field style="padding:10px;">
+                                                <input matInput #inputPasswd2
+                                                    placeholder="{{'lang.retypeNewPassword' | translate}}" required
+                                                    [type]="hidePassword ? 'password' : 'text'"
+                                                    formControlName="retypePasswordCtrl">
+                                                <mat-icon matSuffix (click)="hidePassword = !hidePassword"
+                                                    class="fa fa-2x"
+                                                    [ngClass]="[hidePassword ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
+                                                <mat-hint
+                                                    *ngIf="!firstFormGroup.controls['retypePasswordCtrl'].hasError('mismatch') && firstFormGroup.controls['retypePasswordCtrl'].value != ''">
+                                                    <i color="accent" class="fa fa-check"></i>
+                                                    <span color="accent">{{'lang.passwordMatch' | translate}}</span>
+                                                </mat-hint>
+                                                <mat-error>{{'lang.passwordNotMatch' | translate}} !</mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="passwordRules.renewal.enabled || passwordRules.historyLastUse.enabled"
+                                        class="form-group">
+                                        <div class="col-sm-12" style="padding-left:0px;padding-right:0px;">
+                                            <div class="alert alert-warning" role="alert" [innerHTML]="otherRuleText"
+                                                style="text-align:center;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div style="text-align:center;">
+                                            <button mat-raised-button color="primary" type="button"
+                                                (click)="updatePassword()"
+                                                [disabled]="!firstFormGroup.valid">{{'lang.update' | translate}}</button>
+                                            <button mat-raised-button color="default" type="button"
+                                                (click)="showPassword=false">{{'lang.cancel' | translate}}</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <form class="form-horizontal" (ngSubmit)="onSubmit()" #profileForm="ngForm"
+                                *ngIf="!showPassword">
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <div class="pull-left">
+                                            <div class="avatar" style="font-size:90px;text-align:center;">
+                                                <i class="fa fa-user" style="font-size:90px;padding-top:5px;"></i>
+                                            </div>
+                                        </div>
+                                        <div class="input-group">
+                                            <mat-form-field>
+                                                <input matInput type="text" title="{{'lang.id' | translate}}"
+                                                    value="{{user.user_id}}" placeholder="{{'lang.id' | translate}}"
+                                                    disabled>
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-5" style="font-weight:bold;">
+                                        <mat-form-field>
+                                            <input matInput type="text" id="lastname" name="lastname"
+                                                title="{{'lang.lastname' | translate}}"
+                                                placeholder="{{'lang.lastname' | translate}}"
+                                                [(ngModel)]="user.lastname" required>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-sm-5" style="font-weight:bold;">
+                                        <mat-form-field>
+                                            <input matInput type="text" id="firstname" name="firstname"
+                                                title="{{'lang.firstname' | translate}}"
+                                                placeholder="{{'lang.firstname' | translate}}"
+                                                [(ngModel)]="user.firstname" required>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-sm-2" style="font-style:italic;">
+                                        <mat-form-field>
+                                            <input matInput type="text" id="initials" name="initials"
+                                                title="{{'lang.initials' | translate}}"
+                                                placeholder="{{'lang.initials' | translate}}"
+                                                [(ngModel)]="user.initials">
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <mat-form-field>
+                                            <input matInput type="tel" id="phone" name="phone"
+                                                title="{{'lang.phoneNumber' | translate}}"
+                                                placeholder="{{'lang.phoneNumber' | translate}}"
+                                                [(ngModel)]="user.phone" pattern="\+?((|\ |\.|\(|\)|\-)?(\d)*)*\d$">
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <mat-form-field>
+                                            <input matInput type="email" id="mail" name="mail"
+                                                title="{{'lang.email' | translate}}"
+                                                placeholder="{{'lang.email' | translate}}" [(ngModel)]="user.mail"
+                                                pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)" required>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-top: 10px;">
+                                    <div style="text-align:center;">
+                                        <button mat-raised-button color="primary" type="submit"
+                                            [disabled]="!profileForm.form.valid">{{'lang.update' | translate}}</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </mat-tab>
+                        <mat-tab label="{{'lang.myParameters' | translate}}">
+                            <mat-accordion>
+                                <mat-expansion-panel>
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            <mat-icon color="primary" class="fa fa-file-word"
+                                                style="font-size:25px;width:50px;"></mat-icon>
+                                            <span>{{'lang.editorOption' | translate}}</span>
+                                        </mat-panel-title>
+                                        <mat-panel-description *ngIf="!appService.getViewMode()">
+                                            {{'lang.editorOptionAdmin' | translate}}
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
+
+                                    <div class="col-sm-12 col-md-4" style="line-height: 50px;">
+                                        {{'lang.documentEditor' | translate}}</div>
+                                    <div class="col-sm-12 col-md-8">
+                                        <mat-form-field>
+                                            <mat-select name="documentEdition"
+                                                [(ngModel)]="user.preferences.documentEdition"
+                                                (selectionChange)="updateUserPreferences();">
+                                                <mat-option *ngFor='let editor of editorsList' [value]="editor">
+                                                    {{editor}}</mat-option>
+                                            </mat-select>
+                                            <mat-hint>
+                                                {{'lang.documentEditor_' + user.preferences.documentEdition | translate}}
+                                            </mat-hint>
+                                        </mat-form-field>
+                                    </div>
+                                </mat-expansion-panel>
+                                <mat-expansion-panel>
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            <mat-icon color="primary" class="fa fa-inbox"
+                                                style="font-size:25px;width:50px;"></mat-icon>
+                                            <mat-icon color="primary" class="fa fa-magic"
+                                                style="position: absolute;margin-left: 30px;margin-top: -10px;">
+                                            </mat-icon>
+                                            <span>{{'lang.basketsColor' | translate}}</span>
+                                        </mat-panel-title>
+                                        <mat-panel-description *ngIf="!appService.getViewMode()">
+                                            {{'lang.basketsColorAdmin' | translate}}
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
+
+                                    <mat-list>
+                                        <ng-container
+                                            *ngFor="let regroupedBasket of user.regroupedBaskets; let i = index">
+                                            <h3 *ngIf="regroupedBasket.baskets[0]">{{regroupedBasket.groupDesc}}</h3>
+                                            <mat-list-item
+                                                *ngFor="let basket of regroupedBasket.baskets; let y = index">
+                                                <mat-icon mat-list-icon class="fa fa-inbox"
+                                                    [ngStyle]="{'color': user.regroupedBaskets[i].baskets[y].color}">
+                                                </mat-icon>
+                                                <h4 mat-line title="{{basket.basket_id}}">{{basket.basket_name}}</h4>
+                                                <input name="color" type="color"
+                                                    style="background: none;border: none;height: 20px;width:20px;padding: 0;margin-right: 15px"
+                                                    [(ngModel)]="user.regroupedBaskets[i].baskets[y].color"
+                                                    (change)="updateBasketColor(i, y)" />
+                                                <a (click)="user.regroupedBaskets[i].baskets[y].color = ''; updateBasketColor(i, y)"
+                                                    title="{{'lang.resetColor' | translate}}"
+                                                    style="cursor: pointer;color: #666666">
+                                                    <i class="fa fa-magic"></i>
+                                                </a>
+                                            </mat-list-item>
+                                        </ng-container>
+                                    </mat-list>
+                                </mat-expansion-panel>
+                                <mat-expansion-panel [expanded]="myBasketExpansionPanel">
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            <mat-icon color="primary" class="fa fa-inbox"
+                                                style="font-size:25px;width:50px;"></mat-icon>
+                                            <mat-icon color="primary" class="fa fa-reply"
+                                                style="position: absolute;margin-left: 30px;margin-top: -10px;">
+                                            </mat-icon>
+                                            {{'lang.myBaskets' | translate}}
+                                        </mat-panel-title>
+                                        <mat-panel-description *ngIf="!appService.getViewMode()">
+                                            {{'lang.myBasketsDesc' | translate}}
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
+                                    <div class="col-sm-6" style="overflow:hidden;">
+                                        <mat-list>
+                                            <mat-list-item>
+                                                <mat-icon mat-list-icon color="primary">
+                                                    <mat-checkbox color="primary"
+                                                        (change)="$event ? masterToggleBaskets($event) : null"
+                                                        [checked]="selectionBaskets.hasValue()"
+                                                        matTooltip="{{'lang.selectAll' | translate}}"></mat-checkbox>
+                                                </mat-icon>
+                                                <p mat-line>
+                                                    <span *ngIf="!selectionBaskets.hasValue()"
+                                                        style="opacity: 0.5;font-style: italic;font-size: 80%;">
+                                                        {{'lang.selectAll' | translate}}
+                                                    </span>
+                                                    <plugin-autocomplete *ngIf="selectionBaskets.hasValue()"
+                                                        [labelPlaceholder]="'lang.redirectBaskets' | translate"
+                                                        [routeDatas]="['/rest/autocomplete/users']"
+                                                        [targetSearchKey]="'idToDisplay'"
+                                                        [subInfoKey]="'descriptionToDisplay'"
+                                                        [disableItems]="[headerService.user.id]"
+                                                        (triggerEvent)="addBasketRedirection($event)"
+                                                        appearance="outline"></plugin-autocomplete>
+                                                </p>
+                                            </mat-list-item>
+                                            <mat-divider></mat-divider>
+                                            <ng-container *ngFor="let basket of user.baskets;let i = index">
+                                                <mat-list-item *ngIf="basket.userToDisplay == null"
+                                                    (mouseover)="showActions(basket)" (mouseout)="hideActions(basket)"
+                                                    style="cursor: pointer;">
+                                                    <mat-icon mat-list-icon color="primary" *ngIf="basket.enabled">
+                                                        <mat-checkbox (click)="$event.stopPropagation()"
+                                                            (change)="$event ? selectionBaskets.toggle(basket) : null"
+                                                            [checked]="selectionBaskets.isSelected(basket)"
+                                                            color="primary">
+                                                        </mat-checkbox>
+                                                    </mat-icon>
+                                                    <h4 mat-line color="primary"
+                                                        style="display: flex;align-items: center;">
+                                                        <span (click)="selectionBaskets.toggle(basket);"
+                                                            matTooltip="{{basket.basket_name}} [{{basket.group_desc}}]"
+                                                            style="flex: 2;overflow: hidden;text-overflow: ellipsis;">
+                                                            {{basket.basket_name}}
+                                                            <span class="label label-primary"
+                                                                style="font-weight:normal">{{basket.group_desc}}</span>
+                                                        </span>
+                                                    </h4>
+                                                </mat-list-item>
+                                            </ng-container>
+                                        </mat-list>
+                                    </div>
+                                    <div class="col-sm-6" style="overflow:hidden;">
+                                        <mat-tab-group>
+                                            <mat-tab label="{{'lang.basketsRedirected' | translate}}">
+                                                <mat-list>
+                                                    <ng-container
+                                                        *ngFor="let basket of user.redirectedBaskets;let i = index">
+                                                        <mat-list-item>
+                                                            <mat-icon mat-list-icon color="primary"
+                                                                style="margin-top:-60px;" class="fa fa-paper-plane">
+                                                            </mat-icon>
+                                                            <h4 mat-line color="primary">{{basket.basket_name}}
+                                                                <span class="label label-primary"
+                                                                    style="font-weight:normal">{{basket.group_desc}}</span>
+                                                            </h4>
+                                                            <p mat-line>
+                                                                <mat-form-field>
+                                                                    <input type="text" color="warn" matInput disabled
+                                                                        value="{{'lang.redirectedTo' | translate}} {{basket.userToDisplay}}">
+                                                                    <button mat-button color="warn" matSuffix
+                                                                        mat-icon-button aria-label="Clear"
+                                                                        (click)="delBasketRedirection(basket,i)"
+                                                                        matTooltip="{{'lang.deleteRedirection' | translate}}">
+                                                                        <mat-icon color="warn"
+                                                                            class="fa fa-times text-danger"></mat-icon>
+                                                                    </button>
+                                                                </mat-form-field>
+                                                            </p>
+                                                        </mat-list-item>
+                                                    </ng-container>
+                                                </mat-list>
+                                            </mat-tab>
+                                        </mat-tab-group>
+
+                                        <mat-tab-group>
+                                            <mat-tab label="{{'lang.basketsAssigned' | translate}}">
+                                                <mat-list>
+                                                    <ng-container
+                                                        *ngFor="let basket of user.assignedBaskets;let i = index">
+                                                        <mat-list-item>
+                                                            <mat-icon mat-list-icon color="primary"
+                                                                style="margin-top:-60px;" class="fa fa-reply">
+                                                            </mat-icon>
+                                                            <h4 mat-line color="primary" (click)="basket.redirectMode=false">{{basket.basket_name}}
+                                                                <span class="label label-primary"
+                                                                    style="font-weight:normal">{{basket.group_desc}}</span>
+                                                            </h4>
+                                                            <p mat-line>
+                                                                <plugin-autocomplete
+                                                                    *ngIf="basket.redirectMode"
+                                                                    [labelPlaceholder]="('lang.redirectBasket' | translate) + ': '+basket.basket_name"
+                                                                    [routeDatas]="['/rest/autocomplete/users']"
+                                                                    [targetSearchKey]="'idToDisplay'"
+                                                                    [subInfoKey]="'descriptionToDisplay'"
+                                                                    [disableItems]="[headerService.user.id]"
+                                                                    (triggerEvent)="reassignBasketRedirection($event,basket,i)"
+                                                                    appearance="outline"></plugin-autocomplete>
+                                                                <mat-form-field *ngIf="!basket.redirectMode">
+                                                                    <input type="text" color="warn" matInput disabled
+                                                                        value="{{'lang.assignBy' | translate}} {{basket.userToDisplay}}">
+                                                                    <button mat-button color="warn" matSuffix
+                                                                        mat-icon-button aria-label="Clear"
+                                                                        (click)="basket.redirectMode=true"
+                                                                        matTooltip="{{'lang.reassign' | translate}}">
+                                                                        <mat-icon color="primary" class="fa fa-edit">
+                                                                        </mat-icon>
+                                                                    </button>
+                                                                    <button mat-button color="warn" matSuffix
+                                                                        mat-icon-button aria-label="Clear"
+                                                                        (click)="delBasketAssignRedirection(basket,i)"
+                                                                        matTooltip="{{'lang.deleteAssignation' | translate}}">
+                                                                        <mat-icon color="warn"
+                                                                            class="fa fa-times text-danger"></mat-icon>
+                                                                    </button>
+                                                                </mat-form-field>
+                                                            </p>
+                                                        </mat-list-item>
+                                                    </ng-container>
+                                                </mat-list>
+                                            </mat-tab>
+                                        </mat-tab-group>
+                                    </div>
+                                    <div style="clear:both;"></div>
+                                </mat-expansion-panel>
+                                <mat-expansion-panel (opened)="initMce()">
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            <mat-icon color="primary" class="fa fa-envelope"
+                                                style="font-size:25px;width:50px;"></mat-icon>
+                                            {{'lang.mySignMail' | translate}}
+                                        </mat-panel-title>
+                                        <mat-panel-description *ngIf="!appService.getViewMode()">
+                                            {{'lang.mySignMailDesc' | translate}}
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
+                                    <div class="col-sm-6" style="overflow:hidden;">
+                                        <form (ngSubmit)="submitEmailSignature()" #emailSignatureForm="ngForm">
+                                            <div class="row" style="margin-top:5px;">
+                                                <div class="col-md-12">
+                                                    <mat-form-field>
+                                                        <input matInput type="text"
+                                                            [(ngModel)]="mailSignatureModel.title" name="title"
+                                                            placeholder="{{'lang.label' | translate}}" required>
+                                                    </mat-form-field>
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top:5px;">
+                                                <div class="col-md-12">
+                                                    <div id="html_mode" style="display: block; width:100%;">
+                                                        <textarea name="emailSignature" id="emailSignature"
+                                                            style="width:100%" rows="15" cols="60"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 form-group" style="margin-top: 10px;">
+                                                <div style="text-align:center;">
+                                                    <button mat-raised-button color="primary" type="submit"
+                                                        *ngIf="mailSignatureModel.selected==-1"
+                                                        [disabled]="!emailSignatureForm.form.valid">{{'lang.save' | translate}}</button>
+                                                    <button mat-raised-button color="primary" type="button"
+                                                        *ngIf="mailSignatureModel.selected!=-1"
+                                                        (click)="updateEmailSignature()"
+                                                        [disabled]="!emailSignatureForm.form.valid">{{'lang.update' | translate}}</button>
+                                                    <button mat-raised-button color="warn" type="button"
+                                                        *ngIf="mailSignatureModel.selected!=-1"
+                                                        (click)="deleteEmailSignature()">{{'lang.delete' | translate}}</button>
+                                                    <button mat-raised-button color="default" type="button"
+                                                        *ngIf="mailSignatureModel.selected!=-1"
+                                                        (click)="resetEmailSignature()">{{'lang.cancel' | translate}}</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-sm-6" style="overflow:hidden;">
+                                        <div class="col-md-6 col-sm-6 col-xm-12"
+                                            *ngFor="let emailSignature of user.emailSignatures; let i = index">
+                                            <mat-card style="margin-bottom:10px;">
+                                                <mat-card-content style="text-align:center;">
+                                                    <mat-form-field floatLabel="never">
+                                                        <input matInput type="text" [(ngModel)]="emailSignature.title"
+                                                            name="selectedEmailSignatureLabel"
+                                                            placeholder="{{'lang.label' | translate}}" disabled>
+                                                    </mat-form-field>
+                                                    <button mat-icon-button color="primary"
+                                                        (click)="changeEmailSignature(i)"
+                                                        matTooltip="{{'lang.update' | translate}}">
+                                                        <mat-icon class="fa fa-edit fa-2x"></mat-icon>
+                                                    </button>
+                                                </mat-card-content>
+                                            </mat-card>
+                                        </div>
+                                    </div>
+                                    <div style="clear:both;"></div>
+                                </mat-expansion-panel>
+                                <mat-expansion-panel>
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            <mat-icon color="primary" class="fa fa-certificate"
+                                                style="font-size:25px;width:50px;"></mat-icon>
+                                            {{'lang.mySignSignatureBook' | translate}}
+                                        </mat-panel-title>
+                                        <mat-panel-description *ngIf="!appService.getViewMode()">
+                                            {{'lang.mySignSignatureBookDesc' | translate}}
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
+
+                                    <div style="overflow:hidden;">
+                                        <div dnd-droppable matTooltip="{{'lang.uploadSignFileInfo' | translate}}"
+                                            (click)="clickOnUploader('uploadSignFile')"
+                                            [class.dndFileHighlighted]="highlightMe" (dragover)="highlightMe=true"
+                                            (dragleave)="highlightMe=false"
+                                            (onDropSuccess)="dndUploadSignature($event);highlightMe=false;"
+                                            class="dndFile">
+                                            {{'lang.uploadSignFile' | translate}}
+                                        </div>
+                                        <form (ngSubmit)="submitSignature()" #signatureForm="ngForm"
+                                            style="display:none;">
+                                            <div class="col-md-12">
+                                                <mat-form-field>
+                                                    <input matInput type="text" id="signature_label"
+                                                        name="signature_label" title="{{'lang.label' | translate}}"
+                                                        placeholder="{{'lang.label' | translate}}"
+                                                        [(ngModel)]="signatureModel.label" required>
+                                                </mat-form-field>
+                                                <div class="form-inline hide">
+                                                    <div class="form-group">
+                                                        <input type="file" name="files[]" id="uploadSignFile"
+                                                            (change)="uploadSignatureTrigger($event)" accept="image/*">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div [ngClass]="[signatureModel.size != '' ? 'col-md-10' : 'col-md-12']">
+                                                <div class="upload-drop-zone"
+                                                    (click)="clickOnUploader('uploadSignFile')" style="cursor:pointer">
+                                                    {{'lang.clickOn' | translate}}
+                                                    <i class="fa fa-upload fa-2x"></i>
+                                                    (
+                                                    < 2MB) </div> </div> <div class="col-md-2"
+                                                        *ngIf="signatureModel.size">
+                                                        <img id="signaturePreview" [src]="signatureModel.base64ForJs"
+                                                            alt="Image non valide" style="width: 100%;">
+                                                </div>
+                                                <div class="col-md-12 form-group" style="margin-top: 10px;">
+                                                    <div style="text-align:center;">
+                                                        <button mat-raised-button color="primary" type="submit"
+                                                            [disabled]="!signatureForm.form.valid || !signatureModel.size">{{'lang.save' | translate}}</button>
+                                                    </div>
+                                                </div>
+                                        </form>
+                                    </div>
+
+                                    <div style="display: flex;align-items: flex-start;">
+                                        <div style="flex:1;overflow:hidden;">
+                                            <div class="col-md-4 col-sm-4 col-xm-6"
+                                                *ngFor="let signature of user.signatures; let i = index">
+                                                <mat-card style="margin-bottom:10px;">
+                                                    <mat-card-content style="text-align:center;">
+                                                        <mat-form-field floatLabel="never">
+                                                            <input matInput type="text"
+                                                                [(ngModel)]="signature.signature_label"
+                                                                name="selectedSignatureLabel"
+                                                                placeholder="{{'lang.label' | translate}}"
+                                                                (change)="updateSignature(signature)">
+                                                            <button mat-button matSuffix mat-icon-button
+                                                                (click)="deleteSignature(signature.id)" color="warn"
+                                                                matTooltip="{{'lang.delete' | translate}}">
+                                                                <mat-icon class="fa fa-times"></mat-icon>
+                                                            </button>
+                                                        </mat-form-field>
+                                                        <img [src]="'../rest/users/' + user.id + '/signatures/' + signature.id + '/content' | secureUrl | async"
+                                                            alt="Signature" style="max-width:100%;height:60px;">
+                                                    </mat-card-content>
+                                                </mat-card>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button *ngIf="user.signatures.length > 0" mat-icon-button color="primary"
+                                                (click)="syncMP()"
+                                                matTooltip="{{'lang.syncSignsToMaarchParapheur' | translate}}"
+                                                [disabled]="!user.external_id.maarchParapheur || loadingSign">
+                                                <mat-icon class="fa fa-sync-alt fa-2x" [class.fa-spin]="loadingSign">
+                                                </mat-icon>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div style="clear:both;"></div>
+                                </mat-expansion-panel>
+                                <mat-expansion-panel (opened)="initGroupsContact()">
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title>
+                                            <mat-icon color="primary" class="fa fa-users"
+                                                style="font-size:25px;width:50px;"></mat-icon>
+                                            {{'lang.myContactsGroups' | translate}}
+                                        </mat-panel-title>
+                                        <mat-panel-description *ngIf="!appService.getViewMode()">
+                                            {{'lang.myContactsGroupsDesc' | translate}}
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
+                                    <mat-tab-group
+                                        (selectedIndexChange)="changeTabContactGrp($event);createGrpContPan.close();"
+                                        [selectedIndex]="selectedIndexContactsGrp">
+                                        <mat-tab label="{{'lang.contactGroupList' | translate}}">
+                                            <mat-accordion>
+                                                <mat-expansion-panel #createGrpContPan (opened)="initGroupsContact()">
+                                                    <mat-expansion-panel-header>
+                                                        <mat-panel-title color="primary">
+                                                            <span
+                                                                style="margin-top:5px;">{{'lang.contactGroupCreate' | translate}}</span>
+                                                        </mat-panel-title>
+                                                    </mat-expansion-panel-header>
+                                                    <form id="contactsGroupFormUp" class="form-horizontal"
+                                                        (ngSubmit)="contactsGroupSubmit();createGrpContPan.close();"
+                                                        #contactsGroupFormUp="ngForm">
+                                                        <div class="form-group">
+                                                            <div class="col-sm-12">
+                                                                <mat-form-field>
+                                                                    <input matInput [(ngModel)]="contactsGroup.label"
+                                                                        required name="label" id="label"
+                                                                        title="{{'lang.label' | translate}}" type="text"
+                                                                        placeholder="{{'lang.label' | translate}}"
+                                                                        maxlength="32">
+                                                                </mat-form-field>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-sm-12">
+                                                                <mat-form-field>
+                                                                    <input matInput
+                                                                        [(ngModel)]="contactsGroup.description" required
+                                                                        name="description" id="description"
+                                                                        title="{{'lang.description' | translate}}"
+                                                                        type="text"
+                                                                        placeholder="{{'lang.description' | translate}}"
+                                                                        maxlength="255">
+                                                                </mat-form-field>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-sm-12">
+                                                                <mat-slide-toggle name="plubic"
+                                                                    title="{{'lang.contactsGroupDesc' | translate}}"
+                                                                    id="plubic" color="primary"
+                                                                    [(ngModel)]="contactsGroup.public">
+                                                                    {{'lang.public' | translate}}</mat-slide-toggle>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-sm-12" style="text-align:center;">
+                                                                <button mat-raised-button color="primary" type="submit"
+                                                                    [disabled]="!contactsGroupFormUp.form.valid">{{'lang.save' | translate}}</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </mat-expansion-panel>
+                                            </mat-accordion>
+                                            <div id="contactsGroupList" style="margin-top: 10px;">
+                                                <div class="row">
+                                                    <div class="col-md-6 col-xs-6">
+                                                        <mat-form-field>
+                                                            <input matInput
+                                                                (keyup)="applyFilterGroupsList($event.target.value)"
+                                                                placeholder="{{'lang.filterBy' | translate}}">
+                                                        </mat-form-field>
+                                                    </div>
+                                                    <div class="col-md-6 col-xs-6">
+                                                        <mat-paginator #paginatorGroupsList [length]="100"
+                                                            [hidePageSize]="true" [pageSize]="5">
+                                                        </mat-paginator>
+                                                    </div>
+                                                </div>
+                                                <mat-table #tableGroupsListSort="matSort"
+                                                    [dataSource]="dataSourceGroupsList" matSort matSortActive="label"
+                                                    matSortDirection="asc">
+                                                    <ng-container matColumnDef="label">
+                                                        <mat-header-cell *matHeaderCellDef mat-sort-header
+                                                            [class.hide-for-mobile]="appService.getViewMode()"
+                                                            style="flex:2;">
+                                                            {{'lang.label' | translate}}</mat-header-cell>
+                                                        <mat-cell *matCellDef="let element"
+                                                            [class.hide-for-mobile]="appService.getViewMode()"
+                                                            style="flex:2;">
+                                                            {{element.label}} </mat-cell>
+                                                    </ng-container>
+                                                    <ng-container matColumnDef="description">
+                                                        <mat-header-cell *matHeaderCellDef mat-sort-header
+                                                            style="flex:2;">
+                                                            {{'lang.description' | translate}}</mat-header-cell>
+                                                        <mat-cell *matCellDef="let element" style="flex:2;">
+                                                            {{element.description}} </mat-cell>
+                                                    </ng-container>
+                                                    <ng-container matColumnDef="nbContacts">
+                                                        <mat-header-cell *matHeaderCellDef mat-sort-header
+                                                            style="flex:1;">
+                                                            {{'lang.relatedContactNumber' | translate}}
+                                                        </mat-header-cell>
+                                                        <mat-cell *matCellDef="let element" style="flex:1;">
+                                                            <span
+                                                                *ngIf="element.nbContacts == 0">{{element.nbContacts}}</span>
+                                                            <span *ngIf="element.nbContacts > 0" color="primary"
+                                                                style="font-weight:bold;">{{element.nbContacts}}</span>
+                                                        </mat-cell>
+                                                    </ng-container>
+                                                    <ng-container matColumnDef="public">
+                                                        <mat-header-cell *matHeaderCellDef mat-sort-header
+                                                            [class.hide-for-mobile]="appService.getViewMode()"
+                                                            style="flex:1;">
+                                                            {{'lang.public' | translate}}</mat-header-cell>
+                                                        <mat-cell *matCellDef="let element"
+                                                            [class.hide-for-mobile]="appService.getViewMode()"
+                                                            style="flex:1;">
+                                                            <span *ngIf="!element.public"> {{'lang.no' | translate}}
+                                                            </span>
+                                                            <span *ngIf="element.public"> {{'lang.yes' | translate}}
+                                                            </span>
+                                                        </mat-cell>
+                                                    </ng-container>
+                                                    <ng-container matColumnDef="owner">
+                                                        <mat-header-cell *matHeaderCellDef mat-sort-header
+                                                            style="flex:1;">
+                                                            {{'lang.createdBy' | translate}}</mat-header-cell>
+                                                        <mat-cell *matCellDef="let element" style="flex:1;">
+                                                            {{element.labelledOwner}} </mat-cell>
+                                                    </ng-container>
+                                                    <ng-container matColumnDef="actions">
+                                                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                                        <mat-cell *matCellDef="let element"
+                                                            style="justify-content: flex-end;">
+                                                            <button mat-icon-button color="warn"
+                                                                matTooltip="{{'lang.delete' | translate}}"
+                                                                (click)="$event.stopPropagation();deleteContactsGroup(element.position)">
+                                                                <mat-icon class="fa fa-trash-alt fa-2x"
+                                                                    aria-hidden="true">
+                                                                </mat-icon>
+                                                            </button>
+                                                        </mat-cell>
+                                                    </ng-container>
+                                                    <mat-header-row *matHeaderRowDef="displayedColumnsGroupsList">
+                                                    </mat-header-row>
+                                                    <mat-row *matRowDef="let row; columns: displayedColumnsGroupsList;"
+                                                        (click)="loadContactsGroup(row)" style="cursor:pointer;"
+                                                        matTooltip="{{'lang.view' | translate}}"></mat-row>
+                                                </mat-table>
+                                            </div>
+
+                                        </mat-tab>
+                                        <mat-tab label="{{'lang.grouping' | translate}} : {{contactsGroup.label}}"
+                                            *ngIf="contactsListMode">
+                                            <mat-accordion>
+                                                <mat-expansion-panel #linkContPan>
+                                                    <mat-expansion-panel-header>
+                                                        <mat-panel-title color="primary">
+                                                            <span
+                                                                style="margin-top:5px;">{{'lang.linkContact' | translate}}</span>
+                                                        </mat-panel-title>
+                                                    </mat-expansion-panel-header>
+                                                    <div id="contactsGroupFormAdd">
+                                                        <div class="row" style="margin:0px;">
+                                                            <div class="col-md-8" style="padding:5px;">
+                                                                <mat-form-field hintLabel="3 caractères minimum">
+                                                                    <span matPrefix>
+                                                                        <mat-icon class="fa fa-user-plus"
+                                                                            color="primary">
+                                                                        </mat-icon>&nbsp;&nbsp;
+                                                                    </span>
+                                                                    <input class="autocompleteSearch" type="text"
+                                                                        placeholder="{{'lang.linkContact' | translate}}"
+                                                                        matInput [formControl]="searchTerm"
+                                                                        autocomplete="off" (keyup)="launchLoading();"
+                                                                        minlength="3">
+                                                                </mat-form-field>
+                                                            </div>
+                                                            <div class="col-md-6 col-xs-6">
+                                                                <div class="alert alert-danger"
+                                                                     *ngIf="dataSourceContactsListAutocomplete && dataSourceContactsListAutocomplete.data.length == 1000"
+                                                                     [innerHTML]="'lang.limitDataReached_1000' | translate"></div>
+                                                            </div>
+                                                            <div class="col-md-6 col-xs-6">
+                                                                <mat-paginator #paginatorGroupsListAutocomplete
+                                                                    [length]="0" [hidePageSize]="true" [pageSize]="10">
+                                                                </mat-paginator>
+                                                            </div>
+                                                        </div>
+                                                        <mat-progress-bar mode="indeterminate"
+                                                            *ngIf="!dataSourceContactsListAutocomplete && !initAutoCompleteContact">
+                                                        </mat-progress-bar>
+                                                        <mat-table #tableContactList
+                                                            [dataSource]="dataSourceContactsListAutocomplete"
+                                                            *ngIf="dataSourceContactsListAutocomplete">
+                                                            <ng-container matColumnDef="select">
+                                                                <mat-header-cell *matHeaderCellDef style="flex:1;">
+                                                                    <mat-checkbox color="primary"
+                                                                        (change)="$event ? masterToggle($event) : null"
+                                                                        [checked]="selection.hasValue()">
+                                                                    </mat-checkbox>
+                                                                </mat-header-cell>
+                                                                <mat-cell *matCellDef="let element" style="flex:1;">
+                                                                    <mat-checkbox id="check_{{element.id}}"
+                                                                        color="primary"
+                                                                        (click)="$event.stopPropagation()"
+                                                                        (change)="$event ? selection.toggle(element.id) : null"
+                                                                        [disabled]="isInGrp(element)"
+                                                                        [checked]="selection.isSelected(element.id)">
+                                                                    </mat-checkbox>
+                                                                </mat-cell>
+                                                            </ng-container>
+                                                            <ng-container matColumnDef="contact">
+                                                                <mat-header-cell *matHeaderCellDef style="flex:3;">
+                                                                    {{'lang.contact' | translate}}</mat-header-cell>
+                                                                <mat-cell *matCellDef="let element" style="flex:3;">
+                                                                    {{element.contact}} </mat-cell>
+                                                            </ng-container>
+                                                            <ng-container matColumnDef="address">
+                                                                <mat-header-cell *matHeaderCellDef style="flex:3;">
+                                                                    {{'lang.address' | translate}}</mat-header-cell>
+                                                                <mat-cell *matCellDef="let element" style="flex:3;">
+                                                                    {{element.address}} </mat-cell>
+                                                            </ng-container>
+                                                            <mat-header-row
+                                                                *matHeaderRowDef="displayedColumnsContactsListAutocomplete">
+                                                            </mat-header-row>
+                                                            <mat-row
+                                                                *matRowDef="let element; columns: displayedColumnsContactsListAutocomplete;"
+                                                                (click)="selectContact(element.id);"
+                                                                [ngStyle]="{'opacity': !isInGrp(element) ? '' : '0.5'}"
+                                                                style="cursor: pointer;"></mat-row>
+                                                        </mat-table>
+                                                        <div class="form-group">
+                                                            <div style="text-align:center;margin-top:30px">
+                                                                <button mat-raised-button color="primary" type="button"
+                                                                    (click)="saveContactsList($event.target)"
+                                                                    [disabled]="this.selection.selected.length == 0">{{'lang.add' | translate}}</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </mat-expansion-panel>
+                                            </mat-accordion>
+                                            <div id="contactsGroup" style="margin-top:20px;">
+                                                <div class="col-sm-6">
+                                                    <form class="form-horizontal" (ngSubmit)="updateGroupSubmit()"
+                                                        #contactsGroupFormUp="ngForm">
+                                                        <div class="form-group">
+                                                            <div class="col-sm-12">
+                                                                <mat-form-field>
+                                                                    <input matInput [(ngModel)]="contactsGroup.label"
+                                                                        required name="label" id="label"
+                                                                        title="{{'lang.label' | translate}}" type="text"
+                                                                        placeholder="{{'lang.label' | translate}}"
+                                                                        maxlength="32">
+                                                                </mat-form-field>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-sm-12">
+                                                                <mat-form-field>
+                                                                    <input matInput
+                                                                        [(ngModel)]="contactsGroup.description" required
+                                                                        name="description" id="description"
+                                                                        title="{{'lang.description' | translate}}"
+                                                                        type="text"
+                                                                        placeholder="{{'lang.description' | translate}}"
+                                                                        maxlength="255">
+                                                                </mat-form-field>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-sm-12">
+                                                                <mat-slide-toggle name="public"
+                                                                    title="{{'lang.public' | translate}}" id="public"
+                                                                    color="primary" [(ngModel)]="contactsGroup.public">
+                                                                    {{'lang.public' | translate}}
+                                                                </mat-slide-toggle>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div class="col-sm-12" style="text-align:center;">
+                                                                <button mat-raised-button color="primary" type="submit"
+                                                                    [disabled]="!contactsGroupFormUp.form.valid">{{'lang.update' | translate}}</button>
+                                                                <button mat-raised-button color="default" type="button"
+                                                                    (click)="initGroupsContact()">{{'lang.close' | translate}}</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="col-sm-6" *ngIf="contactsListMode">
+                                                    <mat-tab-group>
+                                                        <mat-tab
+                                                            label="{{contactsGroup.contacts.length}} {{'lang.relatedContacts' | translate}}">
+                                                            <div class="row" style="margin:0px;">
+                                                                <div class="col-md-6 col-xs-6">
+                                                                    <mat-form-field>
+                                                                        <input matInput
+                                                                            (keyup)="applyFilterContactsList($event.target.value)"
+                                                                            placeholder="{{'lang.filterBy' | translate}}">
+                                                                    </mat-form-field>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6">
+                                                                    <mat-paginator #paginatorContactsList [length]="0"
+                                                                        [hidePageSize]="true" [pageSize]="10">
+                                                                    </mat-paginator>
+                                                                </div>
+                                                            </div>
+                                                            <mat-table *ngIf="contactsListMode"
+                                                                #tableContactsListSort="matSort"
+                                                                [dataSource]="dataSourceContactsList" matSort
+                                                                matSortActive="contact" matSortDirection="asc">
+                                                                <ng-container matColumnDef="contact">
+                                                                    <mat-header-cell *matHeaderCellDef mat-sort-header
+                                                                        style="flex:3;">{{'lang.contact' | translate}}
+                                                                    </mat-header-cell>
+                                                                    <mat-cell *matCellDef="let element" style="flex:3;">
+                                                                        {{element.contact}} </mat-cell>
+                                                                </ng-container>
+                                                                <ng-container matColumnDef="address">
+                                                                    <mat-header-cell *matHeaderCellDef mat-sort-header
+                                                                        style="flex:3;">{{'lang.address' | translate}}
+                                                                    </mat-header-cell>
+                                                                    <mat-cell *matCellDef="let element" style="flex:3;">
+                                                                        {{element.address}} </mat-cell>
+                                                                </ng-container>
+                                                                <ng-container matColumnDef="actions">
+                                                                    <mat-header-cell *matHeaderCellDef style="flex:1;">
+                                                                    </mat-header-cell>
+                                                                    <mat-cell *matCellDef="let element;let i = index"
+                                                                        style="justify-content: flex-end;flex:1;">
+                                                                        <button mat-icon-button color="warn"
+                                                                            matTooltip="{{'lang.delete' | translate}}"
+                                                                            (click)="$event.stopPropagation();preDelete(i)">
+                                                                            <mat-icon class="fa fa-trash-alt fa-2x"
+                                                                                aria-hidden="true"></mat-icon>
+                                                                        </button>
+                                                                    </mat-cell>
+                                                                </ng-container>
+                                                                <mat-header-row
+                                                                    *matHeaderRowDef="displayedColumnsContactsList">
+                                                                </mat-header-row>
+                                                                <mat-row
+                                                                    *matRowDef="let element; columns: displayedColumnsContactsList;">
+                                                                </mat-row>
+                                                            </mat-table>
+                                                        </mat-tab>
+                                                    </mat-tab-group>
+                                                </div>
+                                            </div>
+                                        </mat-tab>
+                                    </mat-tab-group>
+                                    <div style="clear:both;"></div>
+                                </mat-expansion-panel>
+                            </mat-accordion>
+                        </mat-tab>
+                        <mat-tab label="{{'lang.myHistoric' | translate}}">
+                            <ng-template matTabContent>
+                                <div class="row">
+                                    <div class="col-md-6 col-xs-6">
+                                        <mat-form-field>
+                                            <input matInput (keyup)="applyFilter($event.target.value)"
+                                                placeholder="{{'lang.filterBy' | translate}}">
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="col-md-6 col-xs-6">
+                                        <mat-paginator #paginatorHistory [length]="100" [hidePageSize]="true"
+                                            [pageSize]="10">
+                                        </mat-paginator>
+                                    </div>
+                                </div>
+                                <mat-table #tableHistorySort="matSort" [dataSource]="dataSource" matSort
+                                    matSortActive="event_date" matSortDirection="desc">
+                                    <ng-container matColumnDef="event_date">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{'lang.date' | translate}}
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element">
+                                            {{element.event_date | date : "dd/MM/y HH:mm"}}
+                                        </mat-cell>
+                                    </ng-container>
+                                    <ng-container matColumnDef="record_id">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                            {{'lang.technicalId' | translate}}</mat-header-cell>
+                                        <mat-cell *matCellDef="let element">{{element.record_id}}</mat-cell>
+                                    </ng-container>
+                                    <ng-container matColumnDef="info">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                            {{'lang.description' | translate}}
+                                        </mat-header-cell>
+                                        <mat-cell *matCellDef="let element"> {{element.info}} </mat-cell>
+                                    </ng-container>
+                                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                                    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                                </mat-table>
+                            </ng-template>
+                        </mat-tab>
+                    </mat-tab-group>
+                </mat-card>
+            </div>
+        </div>
+    </mat-sidenav-content>
+
+    <mat-sidenav #snav2 [mode]="appService.getViewMode() ? 'over' : 'side'" [fixedInViewport]="appService.getViewMode()"
+        fixedTopGap="56" position='end' [opened]="appService.getViewMode() ? false : true"
+        style="overflow-x:hidden;max-width:500px;">
+
+        <mat-list>
+            <h3 mat-subheader>{{'lang.groups' | translate}}</h3>
+            <mat-list-item *ngFor="let userGroup of user.groups">
+                <mat-icon color="primary" mat-list-icon class="fa fa-users"></mat-icon>
+                <h4 mat-line>{{userGroup.group_desc}}</h4>
+                <p mat-line>
+                    <mat-form-field style="font-size:10px;">
+                        <input matInput type="text" id="role" name="role" title="{{'lang.role' | translate}}"
+                            placeholder="{{'lang.role' | translate}}" [(ngModel)]="userGroup.role" disabled>
+                        <mat-hint matTooltip="{{'lang.perimeter' | translate}}">{{userGroup.maarch_comment}}</mat-hint>
+                    </mat-form-field>
+                </p>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <h3 mat-subheader>{{'lang.entities' | translate}}</h3>
+            <mat-list-item *ngFor="let userEntity of user.entities">
+                <mat-icon color="primary" *ngIf="userEntity.primary_entity == 'Y'" mat-list-icon class="fa fa-sitemap">
+                </mat-icon>
+                <mat-icon color="primary" *ngIf="userEntity.primary_entity != 'Y'" mat-list-icon class="fa fa-sitemap"
+                    style="position:relative;">
+                    <!--<button mat-icon-button
+                        style="cursor:pointer;position: absolute;right: -20px;top: -20px;font-size:10px;"
+                        (click)="updatePrimaryEntity(userEntity)" matTooltip="{{'lang.entityTooglePrimary' | translate}}">
+                        <mat-icon class="fa fa-arrow-up"></mat-icon>
+                    </button>-->
+                </mat-icon>
+                <h4 mat-line [ngStyle]="{'font-weight': userEntity.primary_entity == 'Y' ? 'bold' : 'normal'}"
+                    matTooltip="{{userEntity.entity_label}}">
+                    {{userEntity.entity_label}}
+                    <span *ngIf="userEntity.primary_entity == 'Y'" class="label label-primary"
+                        style="font-weight:normal">{{'lang.primary' | translate}}</span>
+                </h4>
+                <p mat-line>
+                    <mat-form-field style="font-size:10px;">
+                        <input matInput type="text" id="role" name="role" title="{{'lang.role' | translate}}"
+                            placeholder="{{'lang.role' | translate}}" [(ngModel)]="userEntity.user_role" disabled>
+                    </mat-form-field>
+                </p>
+            </mat-list-item>
+        </mat-list>
+    </mat-sidenav>
+</mat-sidenav-container>

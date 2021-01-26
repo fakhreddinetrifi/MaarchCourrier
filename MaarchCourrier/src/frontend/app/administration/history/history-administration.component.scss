@@ -1,0 +1,54 @@
+@import '../../../css/vars.scss';
+
+.active,
+.active:hover,
+.active:active,
+.active:focus {
+    color: $primary;
+    border-left: solid 5px $primary;
+    background: rgba($primary, 0.14);
+}
+
+
+.paginatorResultList {
+    ::ng-deep.mat-paginator-range-label {
+        justify-content: flex-end;
+        display: flex;
+    }
+}
+
+.filterList {
+    ::ng-deep.mat-optgroup-label {
+        color: $primary;
+        position: sticky;
+        top: 0px;
+        background: white !important;
+        z-index: 1;
+    }
+}
+
+.label {
+    cursor: pointer;
+    margin: 5px;
+}
+
+.bg-head-content {
+    ::ng-deep .mat-focused .mat-form-field-label {
+        /*change color of label*/
+        color: white !important;
+    }
+
+    ::ng-deep.mat-form-field-underline {
+        /*change color of underline*/
+        background-color: white !important;
+    }
+
+    ::ng-deep.mat-form-field-ripple {
+        /*change color of underline when focused*/
+        background-color: white !important;
+    }
+
+    .mat-icon,.mat-datepicker-toggle {
+        color:white;
+    }
+}
