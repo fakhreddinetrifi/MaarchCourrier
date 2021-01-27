@@ -24,6 +24,10 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
     );
 
     public static $prefixLengthsPsr4 = array (
+        't' => 
+        array (
+            'translate\\' => 10,
+        ),
         's' => 
         array (
             'setasign\\Fpdi\\' => 14,
@@ -61,7 +65,6 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
             'Symfony\\Component\\OptionsResolver\\' => 34,
             'Stevenmaguire\\OAuth2\\Client\\' => 28,
             'Status\\' => 7,
-            'Statickidz\\' => 11,
             'SrcCore\\' => 8,
             'Slim\\' => 5,
             'SignatureBook\\' => 14,
@@ -172,6 +175,10 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
     );
 
     public static $prefixDirsPsr4 = array (
+        'translate\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/translate',
+        ),
         'setasign\\Fpdi\\' => 
         array (
             0 => __DIR__ . '/..' . '/setasign/fpdi/src',
@@ -239,10 +246,6 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
         'Status\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/app/status',
-        ),
-        'Statickidz\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/statickidz/php-google-translate-free/src',
         ),
         'SrcCore\\' => 
         array (

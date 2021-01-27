@@ -24,24 +24,24 @@ class InstalledVersions
 private static $installed = array (
   'root' => 
   array (
-    'pretty_version' => '20.10.2.x-dev',
-    'version' => '20.10.2.9999999-dev',
+    'pretty_version' => 'dev-main',
+    'version' => 'dev-main',
     'aliases' => 
     array (
     ),
-    'reference' => '6a84a5a077b774dc62fd56c32b45ed0e09fc7378',
+    'reference' => '7940ef244d7e14636f5d1c94d9e243cdd775aa60',
     'name' => '__root__',
   ),
   'versions' => 
   array (
     '__root__' => 
     array (
-      'pretty_version' => '20.10.2.x-dev',
-      'version' => '20.10.2.9999999-dev',
+      'pretty_version' => 'dev-main',
+      'version' => 'dev-main',
       'aliases' => 
       array (
       ),
-      'reference' => '6a84a5a077b774dc62fd56c32b45ed0e09fc7378',
+      'reference' => '7940ef244d7e14636f5d1c94d9e243cdd775aa60',
     ),
     'bacon/bacon-qr-code' => 
     array (
@@ -439,15 +439,6 @@ private static $installed = array (
       array (
       ),
       'reference' => '1c9318a84ffb890900901136d620b4f03a59da38',
-    ),
-    'statickidz/php-google-translate-free' => 
-    array (
-      'pretty_version' => '1.1.1',
-      'version' => '1.1.1.0',
-      'aliases' => 
-      array (
-      ),
-      'reference' => 'f13f952af0718b4590bdaa2209133f10d0534dea',
     ),
     'symfony/options-resolver' => 
     array (

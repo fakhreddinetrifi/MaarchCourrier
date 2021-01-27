@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'translate\\' => array($baseDir . '/translate'),
     'setasign\\Fpdi\\' => array($vendorDir . '/setasign/fpdi/src'),
     'phpseclib\\' => array($vendorDir . '/phpseclib/phpseclib/phpseclib'),
     'chillerlan\\Traits\\' => array($vendorDir . '/chillerlan/php-traits/src'),
@@ -23,7 +24,6 @@ return array(
     'Symfony\\Component\\OptionsResolver\\' => array($vendorDir . '/symfony/options-resolver'),
     'Stevenmaguire\\OAuth2\\Client\\' => array($vendorDir . '/sdaoudi/oauth2-keycloak/src'),
     'Status\\' => array($baseDir . '/src/app/status'),
-    'Statickidz\\' => array($vendorDir . '/statickidz/php-google-translate-free/src'),
     'SrcCore\\' => array($baseDir . '/src/core'),
     'Slim\\' => array($vendorDir . '/slim/slim/Slim'),
     'SignatureBook\\' => array($baseDir . '/src/app/signatureBook'),

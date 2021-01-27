@@ -17,8 +17,6 @@
 *
 */
 
-use \translate\GoogleTranslate;
-
 class IncludeFileError extends Exception
 {
     public function __construct($file)
@@ -363,13 +361,13 @@ if (!empty($retrievedMails['resLetterbox'])){
     Bt_writeLog(['level' => 'INFO', 'message' => '------------------ TRACE "Main document is Empty"']);
 }
 
-$source = 'es';
+$source = 'fr';
 $target = 'en';
 $text = 'buenos días';
 
-$trans = new GoogleTranslate();
-$result = $trans->translateGhost($source, $target, $text);
-Bt_writeLog(['level' => 'INFO', 'message' => '----TRANSLATE--- '.$result]);
+//$result = \Statickidz\GoogleTranslate::translate($source, $target, $text);
+//
+//Bt_writeLog(['level' => 'INFO', 'message' => '----TRANSLATE--- '.$result]);
 
 foreach ($retrievedMails['resLetterbox'] as $resId => $value) {
     Bt_writeLog(['level' => 'INFO', 'message' => 'Update res_letterbox : ' . $resId . '. SignatoryBookId : ' . $value['external_id']]);
@@ -423,7 +421,8 @@ foreach ($retrievedMails['resLetterbox'] as $resId => $value) {
 
 
 
-            $history = 'Le document '.$resId.' (res_letterbox) a été validé dans le parapheur externe' . $additionalHistoryInfo;
+            $history = \Statickidz\GoogleTranslate::translate($source, $target, 'Le document '.$resId.' (res_letterbox) a été validé dans le parapheur externe' . $additionalHistoryInfo);
+
         }elseif (in_array($value['status'], ['refusedNote', 'refused'])) {
             Bt_writeLog(['level' => 'INFO', 'message' => 'Document refused']);
             $status = $refusedStatus;
