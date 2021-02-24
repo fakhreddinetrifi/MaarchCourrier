@@ -42,8 +42,7 @@
             "ExternalSignatoryBook\\"   : "src/app/external/externalSignatoryBook/",
             "ExternalSummary\\"         : "src/app/external/summary/",
             "Sendmail\\"                : "modules/sendmail/",
-            "Noxxie\\PdfParser\\"       : "vendor/noxxie/pdfparser/src/Smalot/PdfParser/",
-            "translate\\"               : "translate/"
+            "Noxxie\\PdfParser\\"       : "vendor/noxxie/pdfparser/src/Smalot/PdfParser/"
     	}
     },
     "require": {

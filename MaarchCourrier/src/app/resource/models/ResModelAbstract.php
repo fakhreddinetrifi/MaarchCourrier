@@ -17,6 +17,10 @@ namespace Resource\models;
 use SrcCore\models\ValidatorModel;
 use SrcCore\models\DatabaseModel;
 
+/**
+ * This file edited by @Fakhry
+ */
+
 abstract class ResModelAbstract
 {
     public static function getOnView(array $aArgs)
@@ -68,6 +72,30 @@ abstract class ResModelAbstract
             'table'     => ['res_letterbox'],
             'where'     => ['res_id = ?'],
             'data'      => [$args['resId']]
+        ]);
+
+        if (empty($resource[0])) {
+            return [];
+        }
+
+        return $resource[0];
+    }
+
+
+
+    /**
+     * This method added by @Fakhry
+     */
+    public static function getByIdForAlfresco(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['resId']);
+        ValidatorModel::intVal($args, ['resId']);
+
+        $resource = DatabaseModel::select([
+            'select'    => $args['select'],
+            'table'     => ['adr_letterbox'],
+            'where'     => ['type = ?', 'res_id = ?'],
+            'data'      => [$args['type'], $args['resId']]
         ]);
 
         if (empty($resource[0])) {

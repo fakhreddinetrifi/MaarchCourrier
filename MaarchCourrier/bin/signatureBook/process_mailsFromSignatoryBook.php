@@ -17,6 +17,10 @@
 *
 */
 
+/**
+ * This file edited by @Fakhry
+ */
+
 class IncludeFileError extends Exception
 {
     public function __construct($file)
@@ -210,17 +214,6 @@ if (!empty($retrievedMails['error'])) {
 }
 
 // On dégele les pj et on créé une nouvelle ligne si le document a été signé
-if (!empty($retrievedMails['noVersion'])){
-    Bt_writeLog(['level' => 'INFO', 'message' => '------------------ TRACE "Attachments is Not Empty"']);
-//    foreach ($retrievedMails['noVersion'] as $key => $v) {
-//        Bt_writeLog(['level' => 'INFO', 'message' => '------------------ TRACE "KEYS == "' . $key]);
-//        foreach ($v as $s => $k) {
-//            Bt_writeLog(['level' => 'INFO', 'message' => '------------------ TRACE "KEY == " ' .$s . ' "VALUE == " ' . $k]);
-//        }
-//    }
-}else{
-    Bt_writeLog(['level' => 'INFO', 'message' => '------------------ TRACE "Attachments is Empty"']);
-}
 $nbMailsRetrieved = 0;
 foreach ($retrievedMails['noVersion'] as $resId => $value) {
     Bt_writeLog(['level' => 'INFO', 'message' => 'Update res_attachments : ' . $resId . '. ExternalId : ' . $value['external_id']]);
@@ -348,36 +341,24 @@ foreach ($retrievedMails['noVersion'] as $resId => $value) {
 }
 
 
-
-
-if (!empty($retrievedMails['resLetterbox'])){
-    Bt_writeLog(['level' => 'INFO', 'message' => '------------------ TRACE "Main document is Not Empty"']);
-//    foreach ($retrievedMails['resLetterbox'] as $key => $v) {
-//        foreach ($v as $s => $k) {
-//            Bt_writeLog(['level' => 'INFO', 'message' => '------------------ TRACE "KEY == " ' .$s . ' "VALUE == " ' . $k]);
-//        }
-//    }
-}else{
-    Bt_writeLog(['level' => 'INFO', 'message' => '------------------ TRACE "Main document is Empty"']);
-}
-
-$source = 'fr';
-$target = 'en';
-$text = 'buenos días';
-
-//$result = \Statickidz\GoogleTranslate::translate($source, $target, $text);
-//
-//Bt_writeLog(['level' => 'INFO', 'message' => '----TRANSLATE--- '.$result]);
-
+/**
+ * This part is modified by Fakhry.
+ * Here is the code to retrieve the main document of MaarchParapheur
+ */
 foreach ($retrievedMails['resLetterbox'] as $resId => $value) {
     Bt_writeLog(['level' => 'INFO', 'message' => 'Update res_letterbox : ' . $resId . '. SignatoryBookId : ' . $value['external_id']]);
 
     if (!empty($value['encodedFile'])) {
         Bt_writeLog(['level' => 'INFO', 'message' => 'Create document in res_letterbox']);
+
         if ($value['status'] =='validated') {
             $typeToDelete = ['SIGN', 'TNL'];
         } else {
-            $typeToDelete = ['NOTE'];
+            /*
+             * Add status "REF".
+             * When the main document has been refused from MaarchParapheur
+             */
+            $typeToDelete = ['NOTE', 'REF'];
         }
         \SrcCore\models\DatabaseModel::delete([
             'table' => 'adr_letterbox',
@@ -391,11 +372,27 @@ foreach ($retrievedMails['resLetterbox'] as $resId => $value) {
             'encodedResource' => $value['encodedFile'],
             'format'          => 'pdf'
         ]);
+
+        /*
+         * Added those conditions for the status of the correspondences when retrieves the main document from MaarchParapheur
+         */
+        $mode = '';
+        if (in_array($value['status'], ['refused', 'refusedNote'])) {
+            $mode = 'REF';
+        }elseif ($value['status'] == 'validatedNote') {
+            $mode = 'NOTE';
+        }else {
+            $mode = 'SIGN';
+        }
+
         \SrcCore\models\DatabaseModel::insert([
             'table'         => 'adr_letterbox',
             'columnsValues' => [
                 'res_id'       => $resId,
-                'type'         => in_array($value['status'], ['refused', 'refusedNote', 'validatedNote']) ? 'NOTE' : 'SIGN',
+                /*
+                 * Replace the content of "type" by the variable "$mode"
+                 */
+                'type'         => $mode,
                 'docserver_id' => $storeResult['docserver_id'],
                 'path'         => $storeResult['destination_dir'],
                 'filename'     => $storeResult['file_destination_name'],
@@ -410,21 +407,14 @@ foreach ($retrievedMails['resLetterbox'] as $resId => $value) {
             $additionalHistoryInfo =  ' : ' . $value['workflowInfo'];
         }
         if (in_array($value['status'], ['validatedNote', 'validated'])) {
-            Bt_writeLog(['level' => 'INFO', 'message' => '--------------- TRACE "validated"']);
             $status = $validatedStatus;
             if ($value['status'] == 'validatedNote') {
-                Bt_writeLog(['level' => 'INFO', 'message' => '--------------- TRACE "validatedNote"']);
                 $status = $validatedStatusAnnot;
             }
 
-
-
-
-
-            $history = \Statickidz\GoogleTranslate::translate($source, $target, 'Le document '.$resId.' (res_letterbox) a été validé dans le parapheur externe' . $additionalHistoryInfo);
+            $history = 'Le document '.$resId.' (res_letterbox) a été validé dans le parapheur externe' . $additionalHistoryInfo;
 
         }elseif (in_array($value['status'], ['refusedNote', 'refused'])) {
-            Bt_writeLog(['level' => 'INFO', 'message' => 'Document refused']);
             $status = $refusedStatus;
             if ($value['status'] == 'refusedNote') {
                 $status = $refusedStatusAnnot;
@@ -439,11 +429,14 @@ foreach ($retrievedMails['resLetterbox'] as $resId => $value) {
             'event_id'   => '1'
         ]);
         Bt_createNote(['creatorId' => $value['noteCreatorId'], 'creatorName' => $value['noteCreatorName'], 'content' => $value['noteContent'], 'resId' => $resId]);
-        Bt_writeLog(['level' => 'INFO', 'message' => '-------------- TRACE: "STATUS " == ' .$status]);
+
         \Resource\models\ResModel::update([
             'set'     => ['status' => $status],
             'postSet' => ['external_id' => "external_id - 'signatureBookId'"],
             'where'   => ['res_id = ?'],
+            /*
+             * Replace the content of "data" by the variable "$resId"
+             */
             'data'    => [$resId]
         ]);
         $nbMailsRetrieved++;

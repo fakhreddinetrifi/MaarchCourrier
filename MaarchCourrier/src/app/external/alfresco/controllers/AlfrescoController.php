@@ -12,6 +12,9 @@
  * @author  dev@maarch.org
  */
 
+/**
+ * This file edited by @Fakhry
+ */
 namespace Alfresco\controllers;
 
 use Attachment\models\AttachmentModel;
@@ -29,6 +32,7 @@ use Resource\models\ResourceContactModel;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\controllers\LogsController;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\CurlModel;
 use SrcCore\models\PasswordModel;
@@ -532,6 +536,20 @@ class AlfrescoController
         return $response->withJson($folders);
     }
 
+    private static function Bt_writeLog($args = [])
+    {
+        LogsController::add(['isTech'    => true,
+            'moduleId'  => $GLOBALS['batchName'],
+            'level'     => $args['level'],
+            'tableName' => '',
+            'recordId'  => $GLOBALS['batchName'],
+            'eventType' => $GLOBALS['batchName'],
+            'eventId'   => $args['message']]);
+    }
+
+    /**
+     * This method, it is responsible for sending correspondences to Alfresco
+     */
     public static function sendResource(array $args)
     {
         ValidatorModel::notEmpty($args, ['resId', 'folderId', 'userId']);
@@ -566,6 +584,56 @@ class AlfrescoController
             ],
             'resId'     => $args['resId']
         ]);
+
+        /*
+         * Added by Fakhry to get the main document was signed
+         */
+        $documentSigned = ResModel::getByIdForAlfresco([
+            'select'    => [
+                'type', 'path', 'filename'
+            ],
+            'resId'     => $args['resId'],
+            'type' => 'SIGN'
+        ]);
+
+        /*
+         * Just remove the word "Not" from "attachment_type not in (?)"
+         */
+        $attachments = AttachmentModel::get([
+            'select'    => ['res_id', 'title', 'identifier', 'external_id', 'docserver_id', 'path', 'filename', 'format', 'attachment_type'],
+            'where'     => ['res_id_master = ?', 'attachment_type in (?)', 'status not in (?)'],
+            'data'      => [$args['resId'], ['signed_response', 'simple_attachment', 'incoming_mail_attachment'], ['DEL', 'OBS']]
+        ]);
+
+
+        if (empty($documentSigned)) {
+            $documentSigned = ResModel::getByIdForAlfresco([
+                'select'    => [
+                    'type', 'path', 'filename'
+                ],
+                'resId'     => $args['resId'],
+                'type' => 'REF'
+            ]);
+            if (empty($documentSigned)) {
+                $documentSigned = ResModel::getByIdForAlfresco([
+                    'select'    => [
+                        'type', 'path', 'filename'
+                    ],
+                    'resId'     => $args['resId'],
+                    'type' => 'PDF'
+                ]);
+            }
+        }
+
+
+        if (!empty($documentSigned)) {
+            if ($documentSigned['type'] == 'REF'){
+                $document['alt_identifier'] = $document['alt_identifier'] . ' (REFUSE)';
+            }elseif ($documentSigned['type'] == 'SIGN') {
+                $document['alt_identifier'] = $document['alt_identifier'] . ' (SIGNED)';
+            }
+        }
+
         if (empty($document)) {
             return ['errors' => 'Document does not exist'];
         } elseif (empty($document['filename'])) {
@@ -575,19 +643,31 @@ class AlfrescoController
         }
 
         $docserver = DocserverModel::getByDocserverId(['docserverId' => $document['docserver_id'], 'select' => ['path_template', 'docserver_type_id']]);
+
         if (empty($docserver['path_template']) || !file_exists($docserver['path_template'])) {
             return ['errors' => 'Docserver does not exist'];
         }
 
-        $pathToDocument = $docserver['path_template'] . str_replace('#', DIRECTORY_SEPARATOR, $document['path']) . $document['filename'];
+        /*
+         * Get the path of the main document was signed/validated
+         */
+        $pathToDocument = $docserver['path_template'] . str_replace('#', DIRECTORY_SEPARATOR, $documentSigned['path']) . $documentSigned['filename'];
+
         if (!is_file($pathToDocument)) {
-            return ['errors' => 'Document not found on docserver'];
+            /*
+             * Get the path of the main document is not signed
+             */
+            $pathToDocument = $docserver['path_template'] . str_replace('#', DIRECTORY_SEPARATOR, $document['path']) . $document['filename'];
+                if (!is_file($pathToDocument)) {
+                return ['errors' => 'Document not found on docserver'];
+            }
         }
 
         $fileContent = file_get_contents($pathToDocument);
         if ($fileContent === false) {
             return ['errors' => 'Document not found on docserver'];
         }
+
         $alfrescoParameters = CoreConfigModel::getJsonLoaded(['path' => 'apps/maarch_entreprise/xml/alfresco.json']);
         if (empty($alfrescoParameters)) {
             return ['errors' => 'Alfresco mapping file does not exist'];
@@ -627,6 +707,7 @@ class AlfrescoController
                 'data'      => [$args['resId'], 'sender']
             ]);
             $rawContacts = [];
+
             foreach ($resourceContacts as $resourceContact) {
                 if ($resourceContact['type'] == 'contact') {
                     $rawContacts[] = ContactModel::getById([
@@ -636,6 +717,9 @@ class AlfrescoController
                 }
             }
 
+            /*
+             * Mapping DataModels with Alfresco
+             */
             foreach ($alfrescoParameters['mapping']['document'] as $key => $alfrescoParameter) {
                 if ($alfrescoParameter == 'alfrescoLogin') {
                     $properties[$key] = $entityInformations['alfresco']['login'];
@@ -715,11 +799,6 @@ class AlfrescoController
         $externalId['alfrescoId'] = $documentId;
         ResModel::update(['set' => ['external_id' => json_encode($externalId)], 'where' => ['res_id = ?'], 'data' => [$args['resId']]]);
 
-        $attachments = AttachmentModel::get([
-            'select'    => ['res_id', 'title', 'identifier', 'external_id', 'docserver_id', 'path', 'filename', 'format', 'attachment_type'],
-            'where'     => ['res_id_master = ?', 'attachment_type not in (?)', 'status not in (?)'],
-            'data'      => [$args['resId'], ['signed_response'], ['DEL', 'OBS']]
-        ]);
         $firstAttachment = true;
         $attachmentsTitlesSent = [];
         foreach ($attachments as $attachment) {
